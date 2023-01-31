@@ -14,6 +14,13 @@ class CampusDishParser:
         self.driver = driver
         self.url = url
 
+    def change_to_weekly(self):
+        change_weekly_button = self.driver.find_element(By.CSS_SELECTOR, ".DateMealFilterButton")
+        change_weekly_button.click()
+        weekly_option = self.driver.find_element(By.CSS_SELECTOR, "button.ButtonOutline")
+        weekly_option.click()
+        done_button = self.driver.find_element(By.CSS_SELECTOR, "button.Done")
+        done_button.click()
 
     def change_meals(self, index: int = 0):
         change_meal_button = self.driver.find_element(By.CSS_SELECTOR, ".DateMealFilterButton")
@@ -24,9 +31,9 @@ class CampusDishParser:
         meal_option.click()
         done_button = self.driver.find_element(By.CSS_SELECTOR, "button.Done")
         done_button.click()
-    
-    def get_meal_buttons(self) -> List[WebElement]:
-        return self.driver.find_elements(By.CSS_SELECTOR, "button.HeaderItem")
+        
+    def get_meal_buttons(self, day_of_week:int) -> List[WebElement]:
+        return self.driver.find_elements(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child({day_of_week}) button.HeaderItemNameLinkWeeklyMenu")
     
     def get_meal_data(self, meal_button: WebElement):
         meal_button.click()
@@ -34,8 +41,47 @@ class CampusDishParser:
         time.sleep(2)
         meal_data = {}
 
+        title = self.driver.find_element(By.CSS_SELECTOR, "h2.ModalHeaderItemName")
+        meal_data["title"] = title.get_attribute("innerText")
+        
+        serving_size_element = self.driver.find_element(By.CSS_SELECTOR, "div.ModalProductServingSize")
+        #Get rid of "Serving Size " in the text
+        meal_data["serving_size"] = serving_size_element.get_attribute("innerText")[13:]
+        
         calories_span = self.driver.find_element(By.CSS_SELECTOR, "li.Calories > span")
         meal_data["calories"] = int(calories_span.get_attribute("innerText"))
+
+        calories_from_fat_span = self.driver.find_element(By.CSS_SELECTOR, ".Calories.From.Fat > span")
+        meal_data["calories_from_fat"] = int(calories_from_fat_span.get_attribute("innerText"))
+
+        total_fat_span = self.driver.find_element(By.CSS_SELECTOR, ".Total.Fat > span")
+        meal_data["total_fat"] = total_fat_span.get_attribute("innerText")
+
+        saturated_fat_span = self.driver.find_element(By.CSS_SELECTOR, ".Saturated.Fat span.SpanNutrition")
+        meal_data["saturated_fat"] = saturated_fat_span.get_attribute("innerText")
+
+        trans_fat_span = self.driver.find_element(By.CSS_SELECTOR, ".Trans.Fat span.SpanNutrition")
+        meal_data["saturated_fat"] = saturated_fat_span.get_attribute("innerText")
+
+        cholesterol_span = self.driver.find_element(By.CSS_SELECTOR, ".Cholesterol span")
+        meal_data["cholesterol"] = cholesterol_span.get_attribute("innerText")
+
+        sodium_span = self.driver.find_element(By.CSS_SELECTOR, ".Sodium span")
+        meal_data["sodium"] = cholesterol_span.get_attribute("innerText")
+
+        total_carbs_span = self.driver.find_element(By.CSS_SELECTOR, ".Total.Carbohydrates span")
+        meal_data["total_carbohydrates"] = total_carbs_span.get_attribute("innerText")
+
+        dietary_fiber_span = self.driver.find_element(By.CSS_SELECTOR, ".Dietary.Fiber span")
+        meal_data["dietary_fiber"] = dietary_fiber_span.get_attribute("innerText")
+
+        sugar_span = self.driver.find_element(By.CSS_SELECTOR, ".Sugars span")
+        meal_data["sugar"] = sugar_span.get_attribute("innerText")
+
+        protein_span = self.driver.find_element(By.CSS_SELECTOR, ".Protein > span")
+        meal_data["protein"] = protein_span.get_attribute("innerText")
+
+        return meal_data
         
         
 
@@ -51,13 +97,14 @@ class CampusDishParser:
     def get_all_meals(self):
         self.driver.get(self.url)
         self.add_cookies()
-        self.change_meals(2)
+        self.change_to_weekly()
 
         # Need to wait for meal data to load
-        time.sleep(2)
+        time.sleep(15)
+        #self.change_meals(2)
 
-        meal_buttons = self.get_meal_buttons()
-        self.get_meal_data(meal_buttons[0])
+        meal_buttons = self.get_meal_buttons(1)
+        print(self.get_meal_data(meal_buttons[0]))
 
 
 def main():
