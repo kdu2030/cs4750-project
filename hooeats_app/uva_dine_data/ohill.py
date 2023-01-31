@@ -1,7 +1,10 @@
+import time
+from typing import List
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 from datetime import datetime
 from selenium.webdriver.common.by import By
 
@@ -21,6 +24,20 @@ class CampusDishParser:
         meal_option.click()
         done_button = self.driver.find_element(By.CSS_SELECTOR, "button.Done")
         done_button.click()
+    
+    def get_meal_buttons(self) -> List[WebElement]:
+        return self.driver.find_elements(By.CSS_SELECTOR, "button.HeaderItem")
+    
+    def get_meal_data(self, meal_button: WebElement):
+        meal_button.click()
+        #Need to wait for meal data to load
+        time.sleep(2)
+        meal_data = {}
+
+        calories_span = self.driver.find_element(By.CSS_SELECTOR, "li.Calories > span")
+        meal_data["calories"] = int(calories_span.get_attribute("innerText"))
+        
+        
 
     def add_cookies(self):
         date = datetime.now()
@@ -35,6 +52,12 @@ class CampusDishParser:
         self.driver.get(self.url)
         self.add_cookies()
         self.change_meals(2)
+
+        # Need to wait for meal data to load
+        time.sleep(2)
+
+        meal_buttons = self.get_meal_buttons()
+        self.get_meal_data(meal_buttons[0])
 
 
 def main():
