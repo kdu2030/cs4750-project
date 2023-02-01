@@ -35,7 +35,7 @@ class CampusDishParser:
     def get_meal_buttons(self, day_of_week:int) -> List[WebElement]:
         return self.driver.find_elements(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child({day_of_week}) button.HeaderItemNameLinkWeeklyMenu")
     
-    def get_meal_data(self, meal_button: WebElement):
+    def get_meal_data(self, day_of_week: int, meal_button: WebElement):
         meal_button.click()
         #Need to wait for meal data to load
         time.sleep(2)
@@ -43,6 +43,9 @@ class CampusDishParser:
 
         title = self.driver.find_element(By.CSS_SELECTOR, "h2.ModalHeaderItemName")
         meal_data["title"] = title.get_attribute("innerText")
+
+        day_of_week_header =  self.driver.find_element(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child({day_of_week}) > h2.gHIlKF")
+        meal_data["day_of_week"] = day_of_week_header.get_attribute("innerText")
         
         serving_size_element = self.driver.find_element(By.CSS_SELECTOR, "div.ModalProductServingSize")
         #Get rid of "Serving Size " in the text
@@ -52,7 +55,7 @@ class CampusDishParser:
         meal_data["calories"] = int(calories_span.get_attribute("innerText"))
 
         calories_from_fat_span = self.driver.find_element(By.CSS_SELECTOR, ".Calories.From.Fat > span")
-        meal_data["calories_from_fat"] = int(calories_from_fat_span.get_attribute("innerText"))
+        meal_data["calories_from_fat"] = calories_from_fat_span.get_attribute("innerText")
 
         total_fat_span = self.driver.find_element(By.CSS_SELECTOR, ".Total.Fat > span")
         meal_data["total_fat"] = total_fat_span.get_attribute("innerText")
@@ -81,6 +84,9 @@ class CampusDishParser:
         protein_span = self.driver.find_element(By.CSS_SELECTOR, ".Protein > span")
         meal_data["protein"] = protein_span.get_attribute("innerText")
 
+        close_button = self.driver.find_element(By.CSS_SELECTOR, "button[aria-label=\"Close\"]")
+        close_button.click()
+
         return meal_data
         
         
@@ -102,9 +108,20 @@ class CampusDishParser:
         # Need to wait for meal data to load
         time.sleep(15)
         #self.change_meals(2)
-
+        
+        meals = []
         meal_buttons = self.get_meal_buttons(1)
-        print(self.get_meal_data(meal_buttons[0]))
+
+
+        
+        
+        for meal_button in meal_buttons:
+            if len(meal_button.accessible_name) == 0:
+                continue
+            meal_data = self.get_meal_data(1, meal_button)
+            meals.append(meal_data)
+        
+        print(meals)
 
 
 def main():
