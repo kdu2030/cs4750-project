@@ -32,17 +32,22 @@ class CampusDishParser:
         done_button = self.driver.find_element(By.CSS_SELECTOR, "button.Done")
         done_button.click()
         
+    def get_num_days(self) -> int:
+        return len(self.driver.find_elements(By.CSS_SELECTOR, ".sc-ktCSKO > .nmzKf"))
+
     def get_meal_buttons(self, day_of_week:int) -> List[WebElement]:
         return self.driver.find_elements(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child({day_of_week}) button.HeaderItemNameLinkWeeklyMenu")
     
     def get_meal_data(self, day_of_week: int, meal_button: WebElement):
         meal_button.click()
         #Need to wait for meal data to load
-        time.sleep(2)
+        time.sleep(5)
         meal_data = {}
 
-        title = self.driver.find_element(By.CSS_SELECTOR, "h2.ModalHeaderItemName")
-        meal_data["title"] = title.get_attribute("innerText")
+        meal_data["title"] = meal_button.accessible_name
+        
+        description = self.driver.find_element(By.CSS_SELECTOR, "div.ModalProductDescriptionContent")
+        meal_data["description"] = description.get_attribute("innerText")
 
         day_of_week_header =  self.driver.find_element(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child({day_of_week}) > h2.gHIlKF")
         meal_data["day_of_week"] = day_of_week_header.get_attribute("innerText")
@@ -70,7 +75,7 @@ class CampusDishParser:
         meal_data["cholesterol"] = cholesterol_span.get_attribute("innerText")
 
         sodium_span = self.driver.find_element(By.CSS_SELECTOR, ".Sodium span")
-        meal_data["sodium"] = cholesterol_span.get_attribute("innerText")
+        meal_data["sodium"] = sodium_span.get_attribute("innerText")
 
         total_carbs_span = self.driver.find_element(By.CSS_SELECTOR, ".Total.Carbohydrates span")
         meal_data["total_carbohydrates"] = total_carbs_span.get_attribute("innerText")
@@ -110,16 +115,17 @@ class CampusDishParser:
         #self.change_meals(2)
         
         meals = []
-        meal_buttons = self.get_meal_buttons(1)
-
-
+        num_days = self.get_num_days()
         
-        
-        for meal_button in meal_buttons:
-            if len(meal_button.accessible_name) == 0:
-                continue
-            meal_data = self.get_meal_data(1, meal_button)
-            meals.append(meal_data)
+        for i in range(1, num_days+1):
+            meal_buttons = self.get_meal_buttons(i)
+
+            for meal_button in meal_buttons:
+                # Can't click the see more button
+                if len(meal_button.accessible_name) == 0:
+                    continue
+                meal_data = self.get_meal_data(i, meal_button)
+                meals.append(meal_data)
         
         print(meals)
 
