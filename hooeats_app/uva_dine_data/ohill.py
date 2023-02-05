@@ -1,5 +1,5 @@
 import time
-from typing import List
+from typing import Dict, List
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -35,10 +35,26 @@ class CampusDishParser:
     def get_num_days(self) -> int:
         return len(self.driver.find_elements(By.CSS_SELECTOR, ".sc-ktCSKO > .nmzKf"))
 
-    def get_meal_buttons(self, day_of_week:int) -> List[WebElement]:
-        return self.driver.find_elements(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child({day_of_week}) button.HeaderItemNameLinkWeeklyMenu")
+    def show_all(self):
+        see_all_buttons = self.driver.find_elements(By.CSS_SELECTOR, "button[title=\"See More\"]")
+        for button in see_all_buttons:
+            self.driver.execute_script("arguments[0].click()", button)
+
+    def get_meal_buttons(self, day_of_week:int) -> Dict[str, WebElement]:
+        #num_sections = len(self.driver.find_elements(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child(day_of_week) > .eZlfSI"))
+        section_elements = self.driver.find_elements(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child({day_of_week}) > .eZlfSI h1")
+        sections = []
+        for section in section_elements:
+            sections.append(section.get_attribute("innerText"))
+        meal_buttons = {}
+        for i, section in enumerate(sections):
+            meal_buttons[section] = self.driver.find_elements(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child({day_of_week}) > .eZlfSI:nth-child({i+2}) button.HeaderItemNameLinkWeeklyMenu")
+        return meal_buttons
+            
+        
+        # return self.driver.find_elements(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child({day_of_week}) button.HeaderItemNameLinkWeeklyMenu")
     
-    def get_meal_data(self, day_of_week: int, meal_button: WebElement):
+    def get_meal_data(self, day_of_week: int, section: str, meal_button: WebElement):
         meal_button.click()
         #Need to wait for meal data to load
         time.sleep(5)
@@ -48,6 +64,8 @@ class CampusDishParser:
         
         description = self.driver.find_element(By.CSS_SELECTOR, "div.ModalProductDescriptionContent")
         meal_data["description"] = description.get_attribute("innerText")
+
+        meal_data["section"] = section
 
         day_of_week_header =  self.driver.find_element(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child({day_of_week}) > h2.gHIlKF")
         meal_data["day_of_week"] = day_of_week_header.get_attribute("innerText")
@@ -113,6 +131,9 @@ class CampusDishParser:
         # Need to wait for meal data to load
         time.sleep(15)
         #self.change_meals(2)
+
+        self.show_all()
+        #self.get_meal_buttons(1)
         
         meals = []
         num_days = self.get_num_days()
@@ -120,12 +141,11 @@ class CampusDishParser:
         for i in range(1, num_days+1):
             meal_buttons = self.get_meal_buttons(i)
 
-            for meal_button in meal_buttons:
-                # Can't click the see more button
-                if len(meal_button.accessible_name) == 0:
-                    continue
-                meal_data = self.get_meal_data(i, meal_button)
-                meals.append(meal_data)
+            for section_title in meal_buttons.keys():
+                section_meal_buttons = meal_buttons[section_title]
+                for button in section_meal_buttons:
+                    meal_data = self.get_meal_data(i, section_title, button)
+                    meals.append(meal_data)
         
         print(meals)
 
