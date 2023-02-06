@@ -19,7 +19,7 @@ class Runk:
 
     def get_week_dates(self) -> List[str]:
         today = datetime.now()
-        start_of_week = today - timedelta(days=((today.weekday()+1)))
+        start_of_week = today - timedelta(days=((today.weekday())))
         date_strs = []
         for i in range(7):
             date = start_of_week + timedelta(days=i)
@@ -67,7 +67,7 @@ class Runk:
             meal_data["description"] = description
         except:
             meal_data["description"] = ""
-            
+
         meal_data["type"] = meal_type
 
         meal_data["section"] = station_title
@@ -124,13 +124,22 @@ class Runk:
 
     
     def get_all_meals(self):
-        # self.driver.maximize_window()
+        self.driver.maximize_window()
         dates = self.get_week_dates()
-        self.driver.get(self.base_url)
-        meal_types = self.get_meal_types()
-        meal_links = self.get_meal_links()
-        self.change_active_meal(0)
-        print(self.get_meal_type_data(meal_links, dates[0], meal_types[0]))
+
+        all_meals_data = []
+        
+        for date in dates:
+            self.driver.get(self.base_url + f"?date={date}")
+            meal_types = self.get_meal_types()
+            for i, meal_type in enumerate(meal_types):
+                if i != 0:
+                    self.driver.execute_script("window.scrollTo(0, 0);")
+                self.change_active_meal(i)
+                meal_links = self.get_meal_links()
+                all_meals_data.extend(self.get_meal_type_data(meal_links, date, meal_type))
+        
+        return all_meals_data
 
 def main():
     chrome_options = Options()
