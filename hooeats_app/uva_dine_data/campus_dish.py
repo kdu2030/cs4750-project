@@ -23,7 +23,7 @@ class CampusDishParser:
     def close_change_modal(self):
         done_button = self.driver.find_element(By.CSS_SELECTOR, "button.Done")
         done_button.click()
-        time.sleep(15)
+        WebDriverWait(self.driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, "button.HeaderItemNameLinkWeeklyMenu")))
 
     def change_to_weekly(self):
         weekly_option = self.driver.find_element(By.CSS_SELECTOR, "button.ButtonOutline")
@@ -208,7 +208,8 @@ class CampusDishParser:
 
 
 def main():
-    url = "https://virginia.campusdish.com/LocationsAndMenus/ObservatoryHillDiningRoom"
+    # url = "https://virginia.campusdish.com/LocationsAndMenus/ObservatoryHillDiningRoom"
+    url = "https://virginia.campusdish.com/en/locationsandmenus/freshfoodcompany/"
     chrome_options = Options()
     chrome_options.add_experimental_option("detach", True)
     chrome_driver = Service("../chromedriver.exe")
