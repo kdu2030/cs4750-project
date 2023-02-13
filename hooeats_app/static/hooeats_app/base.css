@@ -71,3 +71,6 @@ html,body
     background: rgba(0,0,0,0.5);
 }
 
+.bg-color-primary {
+    background-color: #1fa813;
+}
