@@ -106,7 +106,7 @@ class CampusDishParser:
         meal_data["saturated_fat"] = saturated_fat_span.get_attribute("innerText")
 
         trans_fat_span = self.driver.find_element(By.CSS_SELECTOR, ".Trans.Fat span.SpanNutrition")
-        meal_data["saturated_fat"] = saturated_fat_span.get_attribute("innerText")
+        meal_data["trans_fat"] = saturated_fat_span.get_attribute("innerText")
 
         cholesterol_span = self.driver.find_element(By.CSS_SELECTOR, ".Cholesterol span")
         meal_data["cholesterol"] = cholesterol_span.get_attribute("innerText")
