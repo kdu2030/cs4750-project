@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head_title %} Sign Up {% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column justify-content-center align-items-center h-100">
+    <h2 class="text-success">Sign Up</h2>
+    <p class="display-inline">Already have an account? <a class="text-success" href="#">Sign In</a></p>
+    <form class="w-50">
+        <label for="username" class="form-label">Username<span class="text-danger">*</span></label>
+        <input type="text" name="username" class="form-control mb-3" placeholder="Username" />
+        <label for="email" class="form-label">Email<span class="text-danger">*</span></label>
+        <input type="email" name="email" class="form-control mb-3" placeholder="Email" />
+        <label for="password" class="form-label">Password<span class="text-danger">*</span></label>
+        <input type="password" name="password" class="form-control mb-3" placeholder="Password" />
+        <label for="confirm_password" class="form-label">Confirm Your Password<span class="text-danger">*</span></label>
+        <input type="password" name="confirm_password" class="form-control mb-3" placeholder="Confirm Your Password" />
+        <button type="submit" class="btn btn-success">Sign Up</button>
+    </form>
+</div>
+
+{% endblock %}

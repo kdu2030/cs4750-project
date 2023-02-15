@@ -6,3 +6,6 @@ from django.http import HttpRequest, HttpResponse
 
 def index(request: HttpRequest) -> HttpResponse:
     return render(request, "hooeats_app/index.html")
+
+def signup(request: HttpRequest) -> HttpResponse:
+    return render(request, "hooeats_app/signup.html")
