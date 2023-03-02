@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head_title %} Hoo Eats {% endblock head_title %}
+
+{% block head_content %}
+    <link rel="stylesheet" href="{% static 'hooeats_app/index.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <div class="banner position-relative">
+        <img src="https://news.virginia.edu/sites/default/files/article_image/rotunda_night_summer_17_ss_header_5-2.jpg" width="100%" alt-text="banner" />
+        <div class="banner-shade position-absolute top-0 start-0"></div>
+        <div class="banner-text position-absolute top-50 start-50 translate-middle text-center">
+            <h1 class="fs-1 text-white">Hoo Eats</h1>
+            <p class="fs-2 text-white">Plan your meals at UVA</p>
+        </div>
+    </div>
+
+    <h2 class="text-center mt-3 mb-4">Features</h2>
+    <div class="features-wrapper d-flex justify-content-center">
+        <div class="features">
+            <div class="row">
+                <div class="col-6 d-flex flex-column align-items-center justify-content-center">
+                    <h2>Search for Recipes</h2>
+                    <p class="fs-6">
+                        With over 1000 recipes, you will be sure to find something you enjoy. We have recipes for breakfast, lunch, dinner, and snacks.
+                        Search by keyword, nutritional information, ingredients, cook time, and more.
+                    </p>
+                    <button class="btn btn-success mt-5">
+                        <i class="bi bi-search"></i>
+                        Search for Recipes
+                    </button>
+                </div>
+                <div class="col-6 p-0">
+                    <img src="https://cdn.pixabay.com/photo/2017/02/15/10/39/salad-2068220_1280.jpg" width="100%" height="100%"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6 p-0" id="dining-hall">
+                    <img src="https://cdn.pixabay.com/photo/2015/02/11/10/10/food-632215_1280.jpg" width="100%" height="100%"/>
+                </div>
+                <div class="col-6 d-flex flex-column align-items-center justify-content-center">
+                    <h2>Explore Dining Hall Menus</h2>
+                    <p class="fs-6">
+                        You can explore weekly menus for all three dining halls at UVA - Runk, O'Hill, and Newcomb. Each menu item has nutritional information
+                        such as calories, total fat, carbohydrates, protein, and sugar. Add the dining hall meals you want to your weekly meal plan.
+                    </p>
+                    <button class="btn btn-success mt-5">
+                        <i class="bi bi-cup-straw"></i>
+                        Explore Dining Hall Menus
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6 d-flex flex-column align-items-center justify-content-center">
+                    <h2>Make a Meal Plan</h2>
+                    <p class="fs-6">
+                        Plan out your meals for each week using our meal planner. Each weekly meal plan includes sections for breakfast, lunch, dinner, and snacks.
+                        You can bookmark recipes and UVA dining hall meals that you like, and add them to your plan for the week.
+                    </p>
+                    <button class="btn btn-success mt-5">
+                        <i class="bi bi-calendar-date"></i>
+                        Create a meal plan
+                    </button>
+                </div>
+                <div class="col-6 p-0">
+                    <img src="https://cdn.pixabay.com/photo/2015/07/17/22/43/student-849822_1280.jpg" width="100%" height="100%"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer mt-3 p-3">
+        <p class="text-center mb-0">Created by Ji Chen, Kevin Du, and Ryan Kim</p>
+    </div>
+
+{% endblock %}
