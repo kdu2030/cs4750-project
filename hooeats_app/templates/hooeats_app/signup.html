@@ -7,10 +7,15 @@
 {% endblock %}
 
 {% block content %}
+
 <div class="d-flex flex-column justify-content-center align-items-center h-100">
     <h2 class="text-success">Sign Up</h2>
     <p class="display-inline">Already have an account? <a class="text-success" href="#">Sign In</a></p>
-    <form class="w-50" id="signup-form">
+    {% if error %}
+        <p class="text-danger">{{ error }}</p>
+    {% endif %}
+    <form class="w-50" id="signup-form" method="POST" action="{% url 'handle_signup' %}" onsubmit="checkSignup(); return false;">
+        {% csrf_token %}
         <label for="username" class="form-label">Username<span class="text-danger">*</span></label>
         <input type="text" name="username" class="form-control mb-3" placeholder="Username" required />
         
@@ -23,7 +28,7 @@
         <label for="confirm_password" class="form-label">Confirm Your Password<span class="text-danger">*</span></label>
         <input type="password" name="confirm_password" class="form-control mb-3" placeholder="Confirm Your Password" required />
         
-        <button type="button" class="btn btn-success" onclick="checkConfirmPassword();">Sign Up</button>
+        <button type="submit" class="btn btn-success">Sign Up</button>
     </form>
 </div>
 

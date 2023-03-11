@@ -1,5 +1,6 @@
 {% load bootstrap5 %}
 {% load static %}
+{% load parse_cookie %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,6 +15,12 @@
     {% endblock %}
 </head>
 <body>
+
+    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3 z-50">
+        <div class="toast" id="success-toast" role="alert" aria-live="assertive" aria-atomic="true">
+        </div>
+    </div>
+
     <nav class="navbar navbar-expand-lg d-flex justify-content-between align-items-center">
         <div class="logo-menu d-flex flex-row ms-3">
             <button type="button" class="menu-button btn border-end border-2" data-bs-toggle="offcanvas" href="#nav-menu">
@@ -27,9 +34,21 @@
                 <i class="bi bi-search"></i>
             </button>
         </form>
+        {% if "user" in request.COOKIES %}
+            <div class="d-flex flex-row me-3 align-items-center">
+                <img class="me-2" src="{% get_cookie_value request.COOKIES.user "profile_img" %}" width="40px" height="40px" />
+                <p class="text-white mb-0">{% get_cookie_value request.COOKIES.user "username" %}</p>
+            </div>
+        {% elif user_dict %}
+            <div class="d-flex flex-row me-3 align-items-center">
+                <img class="me-2" src="{{user_dict.profile_img}}" width="40px" height="40px" />
+                <p class="text-white mb-0">{{user_dict.username}}</p>
+            </div>
+        {% else %}
         <button type="button" class="sign-in-button btn btn-outline-success me-3">
             Sign in
         </button>
+        {% endif %}
     </nav>
 
     <div class="offcanvas offcanvas-start" tabindex="-1" id="nav-menu">

@@ -1,7 +1,10 @@
 from django.urls import path
-from . import views
+from .views import views
+from .views import auth
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("signup", views.signup, name="signup")
+    path("signup", auth.signup, name="signup"),
+    path("handle-signup", auth.handle_signup, name="handle_signup"),
+    path("api/signup-valid", auth.signup_valid, name="signup_valid")
 ]
