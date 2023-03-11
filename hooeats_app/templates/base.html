@@ -1,5 +1,6 @@
 {% load bootstrap5 %}
 {% load static %}
+{% load parse_cookie %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,12 +15,18 @@
     {% endblock %}
 </head>
 <body>
+
+    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3 z-50">
+        <div class="toast" id="success-toast" role="alert" aria-live="assertive" aria-atomic="true">
+        </div>
+    </div>
+
     <nav class="navbar navbar-expand-lg d-flex justify-content-between align-items-center">
         <div class="logo-menu d-flex flex-row ms-3">
             <button type="button" class="menu-button btn border-end border-2" data-bs-toggle="offcanvas" href="#nav-menu">
                 <i class="bi bi-list fs-4"></i>
             </button>
-            <h1 class="fs-3 mt-2 ms-2">Hoo Eats</h1>
+            <a class="text-decoration-none text-white" href="{%url 'index'%}"><h1 class="fs-3 mt-2 ms-2">Hoo Eats</h1></a>
         </div>
         <form class="d-flex flex-row">
             <input type="text" name="search" class="form-control search-bar" placeholder="Search for recipes or dining hall meals" />
@@ -27,9 +34,26 @@
                 <i class="bi bi-search"></i>
             </button>
         </form>
-        <button type="button" class="sign-in-button btn btn-outline-success me-3">
-            Sign in
-        </button>
+        {% if "user" in request.COOKIES %}
+            <button class="btn d-flex flex-row me-3 align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img class="me-2" src="{% get_cookie_value request.COOKIES.user "profile_img" %}" width="40px" height="40px" />
+                <p class="text-white mb-0">{% get_cookie_value request.COOKIES.user "username" %}</p>
+            </button>
+            <ul class="dropdown-menu" style="right: 0; left: auto">
+                <li>
+                    <a class="dropdown-item" href="{% url 'signout' %}">
+                        <i class="bi bi-box-arrow-in-left me-2"></i>
+                        Sign Out
+                    </a>
+                </li>
+            </ul>
+        {% else %}
+        <a href="{%url 'signin'%}">
+            <button type="button" class="sign-in-button btn btn-outline-success me-3">
+                Sign in
+            </button>
+        </a>
+        {% endif %}
     </nav>
 
     <div class="offcanvas offcanvas-start" tabindex="-1" id="nav-menu">
@@ -38,6 +62,26 @@
             <button type="button" class="btn text-white" data-bs-dismiss="offcanvas">
                 <i class="bi bi-x-lg fs-4"></i>
             </button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="list-group w-100 list-group-flush mt-2">
+                {% if "user" not in request.COOKIES %}
+                   <a href="{% url 'signin' %}" class="list-group-item list-group-item-action">
+                     <i class="bi bi-box-arrow-in-right me-2"></i>
+                     Sign In
+                   </a>
+                   <a href="{% url 'signup' %}" class="list-group-item list-group-item-action">
+                    <i class="bi bi-clipboard-check me-2"></i>
+                    Sign Up
+                   </a>
+                {% endif %}
+                {% if "user" in request.COOKIES %}
+                    <a href="{% url 'signout' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-box-arrow-in-left me-2"></i>
+                        Sign Out
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </div>
 

@@ -9,26 +9,20 @@
 {% block content %}
 
 <div class="d-flex flex-column justify-content-center align-items-center h-100">
-    <h2 class="text-success">Sign Up</h2>
-    <p class="display-inline">Already have an account? <a class="text-success" href="{% url 'signin' %}">Sign In</a></p>
+    <h2 class="text-success">Sign In</h2>
+    <p class="display-inline">Don't have an account yet? <a class="text-success" href="{% url 'signup' %}">Sign Up</a></p>
     {% if error %}
         <p class="text-danger">{{ error }}</p>
     {% endif %}
-    <form class="w-50" id="signup-form" method="POST" action="{% url 'handle_signup' %}" onsubmit="checkSignup(); return false;">
+    <form class="w-50" id="signup-form" method="POST" action="{% url 'handle_signin' %}">
         {% csrf_token %}
         <label for="username" class="form-label">Username<span class="text-danger">*</span></label>
         <input type="text" name="username" class="form-control mb-3" placeholder="Username" required />
         
-        <label for="email" class="form-label">Email<span class="text-danger">*</span></label>
-        <input type="email" name="email" class="form-control mb-3" placeholder="Email" required />
-        
         <label for="password" class="form-label">Password<span class="text-danger">*</span></label>
         <input type="password" name="password" class="form-control mb-3" placeholder="Password" required />
         
-        <label for="confirm_password" class="form-label">Confirm Your Password<span class="text-danger">*</span></label>
-        <input type="password" name="confirm_password" class="form-control mb-3" placeholder="Confirm Your Password" required />
-        
-        <button type="submit" class="btn btn-success">Sign Up</button>
+        <button type="submit" class="btn btn-success">Sign In</button>
     </form>
 </div>
 
