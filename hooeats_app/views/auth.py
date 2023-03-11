@@ -1,6 +1,6 @@
 
 from django.shortcuts import render, redirect
-from django.http import HttpRequest, HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from hooeats_app.db_utils.database import HooEatsDatabase
 from json import loads
 import hashlib
@@ -33,10 +33,10 @@ def handle_signin(request: HttpRequest) -> HttpResponse:
         if signin_results[0]["password"] != password_hash:
            return redirect(reverse("signin_error", args=["Your password is incorrect"]))
         user_dict = {"username": username, "email": signin_results[0]["email"], "profile_img": signin_results[0]["profile_img"]}
-        response = redirect(reverse("index"), "hooeats_app/index.html", {"user_dict": user_dict})
+        response = redirect(reverse("index"))
         response.set_cookie("user", json.dumps(user_dict))
         return response
-    except Exception as e:
+    except Exception:
         traceback.print_exc()
         return redirect(reverse("signin_error", args=["We were unable to verify your account. Please try again."]))
         
@@ -53,14 +53,17 @@ def handle_signup(request: HttpRequest) -> HttpResponse:
         database.execute(signup_query, expect_results=False)
         database.close()
         user_dict = {"username": username, "email": email, "profile_img": profile_img}
-        response = redirect(reverse("index"), "hooeats_app/index.html", {"user_dict": user_dict})
+        response = redirect(reverse("index"))
         response.set_cookie("user", json.dumps(user_dict))
         return response
-    except Exception as e:
+    except Exception:
         traceback.print_exc()
         return redirect(reverse("signup_error", args=["We were unable to create your account. Please try again."]))
     
-    
+def signout(request: HttpRequest) -> HttpResponse:
+    response = redirect(reverse("index"))
+    response.delete_cookie("user")
+    return response    
     
 
 def signup_valid(request: HttpRequest) -> JsonResponse:
