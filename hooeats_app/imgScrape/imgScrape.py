@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import pandas as pd
 
 def recipe_images(recipe_title):
 
@@ -19,7 +20,9 @@ def recipe_images(recipe_title):
     return final
 
 def main():
-    print(recipe_images("best banana bread 2886"))
+    data_import = pd.read_csv('recipes2500.csv', usecols = [1])
+    print(data_import)
+    #print(recipe_images("best banana bread 2886"))
 
 if __name__ == "__main__":
     main()
