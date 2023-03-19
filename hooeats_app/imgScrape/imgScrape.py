@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import time
 #from IPython.display import display
 
 def recipe_images(recipe_title):
@@ -28,12 +29,48 @@ def main():
     #df.drop(index_name, inplace = True)
     df['recipe_title'] = df['name'] + " " + df['id'].astype(str)
     df = df.drop(['name', 'id'], axis=1)
+    imgURL_df = pd.DataFrame(columns = ["imageURL"])
+    df_50 = df.iloc[:50]
+    #print(df.iloc[0].values[0])
+    #print(df_50)
+    #print(df_15_1)
+    print(df_50)
+    for i in range(50):
+        try:
+            imgURL_df = imgURL_df.append({'imageURL': recipe_images(df_50.iloc[i].values[0])}, ignore_index = True)
+        except TimeoutError:
+            time.sleep(15)
+            continue
+        except ConnectionError:
+            time.sleep(15)
+            continue
+
+    #for i in range(50):
+     #   if i != 0:
+      #      if i % 5 == 0:
+       #         time.sleep(15)
+        #        imgURL_df = imgURL_df.append({'imageURL': recipe_images(df_50.iloc[i].values[0])}, ignore_index = True)
+         #   else:
+          #      time.sleep(8)
+           #     imgURL_df = imgURL_df.append({'imageURL': recipe_images(df_50.iloc[i].values[0])}, ignore_index = True)
+    #for i in range(2500):
+        #imgURL_df = imgURL_df.append({'imageURL': recipe_images(df.iloc[i].values[0])}, ignore_index = True)
+    #imgURL_df = imgURL_df.append({'imageURL': recipe_images(df.iloc[3].values[0])}, ignore_index = True)
+    #print(df.iloc[3].values[0])
+    #print(recipe_images(df.iloc[3].values[0]))
+    print(imgURL_df)
     #print(df)
     #print(df.iloc[:,0])
     #print(combined_df)
     #print(combined_df.apply(recipe_images))
     #print(recipe_images("best banana bread 2886"))
-    df['imageURL'] = df.apply(lambda row : recipe_images(row['recipe_title']), axis = 1)
+    #print(recipe_images("creamy chocolate squares lite 57454"))
+    #print(df.iloc[1])
+    #df['imageURL'] = df.iloc[0].apply(recipe_images)
+    #print(df)
+
+
+    #df['imageURL'] = df.apply(lambda x : recipe_images(x['recipe_title']), axis = 1)
 
 if __name__ == "__main__":
     main()
