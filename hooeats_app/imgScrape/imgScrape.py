@@ -29,19 +29,16 @@ def main():
     #df.drop(index_name, inplace = True)
     df['recipe_title'] = df['name'] + " " + df['id'].astype(str)
     df = df.drop(['name', 'id'], axis=1)
-    imgURL_df = pd.DataFrame(columns = ["imageURL"])
-    df_50 = df.iloc[:50]
+    imgURL_df = pd.DataFrame(columns = ["imageURL", "recipe_title"])
+    df_100 = df.iloc[:100]
     #print(df.iloc[0].values[0])
     #print(df_50)
     #print(df_15_1)
-    print(df_50)
-    for i in range(50):
+    print(df_100)
+    for i in range(101):
         try:
-            imgURL_df = imgURL_df.append({'imageURL': recipe_images(df_50.iloc[i].values[0])}, ignore_index = True)
-        except TimeoutError:
-            time.sleep(15)
-            continue
-        except ConnectionError:
+            imgURL_df = imgURL_df.append({'imageURL': recipe_images(df_100.iloc[i].values[0]), 'recipe_title': df_100.iloc[i].values[0]}, ignore_index = True)
+        except:
             time.sleep(15)
             continue
 
@@ -53,12 +50,16 @@ def main():
          #   else:
           #      time.sleep(8)
            #     imgURL_df = imgURL_df.append({'imageURL': recipe_images(df_50.iloc[i].values[0])}, ignore_index = True)
+
     #for i in range(2500):
         #imgURL_df = imgURL_df.append({'imageURL': recipe_images(df.iloc[i].values[0])}, ignore_index = True)
+        
     #imgURL_df = imgURL_df.append({'imageURL': recipe_images(df.iloc[3].values[0])}, ignore_index = True)
     #print(df.iloc[3].values[0])
     #print(recipe_images(df.iloc[3].values[0]))
-    print(imgURL_df)
+    #print(imgURL_df)
+    #print(imgURL_df.iloc[14].values[0])
+    #print(imgURL_df.iloc[14].values[1])
     #print(df)
     #print(df.iloc[:,0])
     #print(combined_df)
