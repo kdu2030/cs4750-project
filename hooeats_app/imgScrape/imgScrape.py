@@ -22,7 +22,7 @@ def recipe_images(recipe_title):
     return final
 
 def main():
-    data_import = pd.read_csv('recipes2500.csv', usecols = [0, 1])
+    data_import = pd.read_csv('recipes5500.csv', usecols = [0, 1])
     df = pd.DataFrame(data_import, columns=['name', 'id'])
     #print(df)
     #index_name = df[df['id'] == 86744].index
@@ -30,18 +30,19 @@ def main():
     df['recipe_title'] = df['name'] + " " + df['id'].astype(str)
     df = df.drop(['name', 'id'], axis=1)
     imgURL_df = pd.DataFrame(columns = ["imageURL", "recipe_title"])
-    df_100 = df.iloc[:100]
+    #df_500 = df.iloc[:500]
     #print(df.iloc[0].values[0])
     #print(df_50)
     #print(df_15_1)
-    print(df_100)
-    for i in range(101):
+    #print(df_500)
+    for i in range(5000):
         try:
-            imgURL_df = imgURL_df.append({'imageURL': recipe_images(df_100.iloc[i].values[0]), 'recipe_title': df_100.iloc[i].values[0]}, ignore_index = True)
+            imgURL_df = imgURL_df.append({'imageURL': recipe_images(df.iloc[i].values[0]), 'recipe_title': df.iloc[i].values[0]}, ignore_index = True)
         except:
             time.sleep(15)
             continue
 
+    imgURL_df.to_csv('C:/Users/pokea/Downloads/imgURL.csv')
     #for i in range(50):
      #   if i != 0:
       #      if i % 5 == 0:
@@ -60,6 +61,18 @@ def main():
     #print(imgURL_df)
     #print(imgURL_df.iloc[14].values[0])
     #print(imgURL_df.iloc[14].values[1])
+
+    #print(imgURL_df.iloc[40].values[0])
+    #print(imgURL_df.iloc[40].values[1])
+
+    #print(imgURL_df.iloc[102].values[0])
+    #print(imgURL_df.iloc[102].values[1])
+
+    #print(imgURL_df.iloc[152].values[0])
+    #print(imgURL_df.iloc[152].values[1])
+
+    #print(imgURL_df.iloc[325].values[0])
+    #print(imgURL_df.iloc[325].values[1])
     #print(df)
     #print(df.iloc[:,0])
     #print(combined_df)
