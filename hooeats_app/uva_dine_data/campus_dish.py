@@ -37,22 +37,13 @@ class CampusDishParser:
             By.CSS_SELECTOR, "button.ButtonOutline")
         weekly_option.click()
 
-    # def change_meals(self, index: int = 0):
-    #     meal_dropdown = self.driver.find_element(By.CSS_SELECTOR, ".sc-hAsxaJ .css-1t70p0u-control")
-    #     meal_dropdown.click()
-    #     meal_option = self.driver.find_element(By.CSS_SELECTOR, f".css-wuv0vk > #react-select-2-option-{index}")
-    #     meal_option.click()
     def open_meal_type_dropdown(self):
         meal_dropdown = self.driver.find_element(
             By.CSS_SELECTOR, "#modal-root > div > div > div > div > div.sc-gXmSlM.iTlHgL > div > div > div.sc-yeoIj.eGQvq > div > div")
         meal_dropdown.click()
-        # options = self.get_meal_type_titles(self.driver.find_elements(By.CSS_SELECTOR, ".css-wuv0vk div"))
-        # self.get_meal_options()[0].click()
-        # return options
 
     def get_meal_options(self) -> List[WebElement]:
         return self.driver.find_elements(By.CSS_SELECTOR, ".css-wuv0vk div")
-        # return self.driver.find_elements(By.CSS_SELECTOR, ".css-26l3qy-menu")
 
     def get_meal_type_titles(self) -> List[str]:
         meal_type_options = self.get_meal_options()
@@ -71,7 +62,6 @@ class CampusDishParser:
             self.driver.execute_script("arguments[0].click()", button)
 
     def get_meal_buttons(self, day_of_week: int) -> Dict[str, WebElement]:
-        # num_sections = len(self.driver.find_elements(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child(day_of_week) > .eZlfSI"))
         section_elements = self.driver.find_elements(
             By.CSS_SELECTOR, f".flOORh:nth-child({day_of_week}) .StationHeaderTitle")
         sections = []
@@ -83,14 +73,20 @@ class CampusDishParser:
                 By.CSS_SELECTOR, f".flOORh:nth-child({day_of_week}) .jCLkpp:nth-child({i+2}) .HeaderItemNameLinkWeeklyMenu")
         return meal_buttons
 
-        # return self.driver.find_elements(By.CSS_SELECTOR, f".sc-ktCSKO > .nmzKf:nth-child({day_of_week}) button.HeaderItemNameLinkWeeklyMenu")
 
-    def get_meal_data(self, day_of_week: int, section: str, meal_type: str, meal_button: WebElement):
-        meal_data = {}
+    def get_num(self, nutritional_value: str) -> float:
+        space_index = nutritional_value.find(" ")
+        if space_index == -1 or not nutritional_value[:space_index].isdigit():
+            return 0.0
+        return float(space_index)
+
+    
+    def get_meal(self, day_of_week: int, section: str, meal_type: str, meal_button: WebElement):
+        meal = {}
 
         day_of_week_header = self.driver.find_element(
             By.CSS_SELECTOR, f".flOORh:nth-child({day_of_week}) h2")
-        meal_data["day_of_week"] = day_of_week_header.get_attribute(
+        meal["day_of_week"] = day_of_week_header.get_attribute(
             "innerText")
 
         meal_button.click()
@@ -98,78 +94,78 @@ class CampusDishParser:
         WebDriverWait(self.driver, 60).until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, "div.ModalProductDescriptionContent")))
 
-        meal_data["title"] = meal_button.accessible_name
+        meal["title"] = meal_button.accessible_name
 
         description = self.driver.find_element(
             By.CSS_SELECTOR, "div.ModalProductDescriptionContent")
-        meal_data["description"] = description.get_attribute("innerText")
+        meal["description"] = description.get_attribute("innerText")
 
-        meal_data["type"] = meal_type
+        meal["type"] = meal_type
 
-        meal_data["section"] = section
+        meal["section"] = section
 
         serving_size_element = self.driver.find_element(
             By.CSS_SELECTOR, "div.ModalProductServingSize")
         # Get rid of "Serving Size " in the text
-        meal_data["serving_size"] = serving_size_element.get_attribute("innerText")[
+        meal["serving_size"] = serving_size_element.get_attribute("innerText")[
             13:]
 
         calories_span = self.driver.find_element(
             By.CSS_SELECTOR, "li.Calories > span")
-        meal_data["calories"] = int(calories_span.get_attribute("innerText"))
+        meal["calories"] = float(calories_span.get_attribute("innerText"))
 
         calories_from_fat_span = self.driver.find_element(
             By.CSS_SELECTOR, ".Calories.From.Fat > span")
         calories_from_fat_text = calories_from_fat_span.get_attribute(
             "innerText")
         if calories_from_fat_text.isdigit():
-            meal_data["calories_from_fat"] = int(calories_from_fat_text)
+            meal["calories_from_fat"] = float(calories_from_fat_text)
         else:
-            meal_data["calories_from_fat"] = 0
+            meal["calories_from_fat"] = 0.0
 
         total_fat_span = self.driver.find_element(
             By.CSS_SELECTOR, ".Total.Fat > span")
-        meal_data["total_fat"] = total_fat_span.get_attribute("innerText")
+        meal["total_fat"] = self.get_num(total_fat_span.get_attribute("innerText"))
 
         saturated_fat_span = self.driver.find_element(
             By.CSS_SELECTOR, ".Saturated.Fat span.SpanNutrition")
-        meal_data["saturated_fat"] = saturated_fat_span.get_attribute(
-            "innerText")
+        meal["saturated_fat"] = self.get_num(saturated_fat_span.get_attribute(
+            "innerText"))
 
         trans_fat_span = self.driver.find_element(
             By.CSS_SELECTOR, ".Trans.Fat span.SpanNutrition")
-        meal_data["saturated_fat"] = saturated_fat_span.get_attribute(
-            "innerText")
+        meal["saturated_fat"] = self.get_num(saturated_fat_span.get_attribute(
+            "innerText"))
 
         cholesterol_span = self.driver.find_element(
             By.CSS_SELECTOR, ".Cholesterol span")
-        meal_data["cholesterol"] = cholesterol_span.get_attribute("innerText")
+        meal["cholesterol"] = self.get_num(cholesterol_span.get_attribute("innerText"))
 
         sodium_span = self.driver.find_element(By.CSS_SELECTOR, ".Sodium span")
-        meal_data["sodium"] = sodium_span.get_attribute("innerText")
+        meal["sodium"] = self.get_num(sodium_span.get_attribute("innerText"))
 
         total_carbs_span = self.driver.find_element(
             By.CSS_SELECTOR, ".Total.Carbohydrates span")
-        meal_data["total_carbohydrates"] = total_carbs_span.get_attribute(
-            "innerText")
+        meal["total_carbohydrates"] = self.get_num(total_carbs_span.get_attribute(
+            "innerText"))
 
         dietary_fiber_span = self.driver.find_element(
             By.CSS_SELECTOR, ".Dietary.Fiber span")
-        meal_data["dietary_fiber"] = dietary_fiber_span.get_attribute(
-            "innerText")
+        meal["dietary_fiber"] = self.get_num(dietary_fiber_span.get_attribute(
+            "innerText"))
 
         sugar_span = self.driver.find_element(By.CSS_SELECTOR, ".Sugars span")
-        meal_data["sugar"] = sugar_span.get_attribute("innerText")
+        meal["sugar"] = self.get_num(sugar_span.get_attribute("innerText"))
 
         protein_span = self.driver.find_element(
             By.CSS_SELECTOR, ".Protein > span")
-        meal_data["protein"] = protein_span.get_attribute("innerText")
+        meal["protein"] = self.get_num(protein_span.get_attribute("innerText"))
 
         close_button = self.driver.find_element(
             By.CSS_SELECTOR, "button[aria-label=\"Close\"]")
         close_button.click()
 
-        return meal_data
+        return meal
 
     def add_cookies(self):
         date = datetime.now()
@@ -183,10 +179,8 @@ class CampusDishParser:
         self.driver.refresh()
 
     def get_all_meals(self, meal_type: str) -> List[Dict]:
-        # self.change_meals(2)
 
         self.show_all()
-        # self.get_meal_buttons(1)
 
         meals = []
         num_days = self.get_num_days()
@@ -197,11 +191,19 @@ class CampusDishParser:
             for section_title in meal_buttons.keys():
                 section_meal_buttons = meal_buttons[section_title]
                 for button in section_meal_buttons:
-                    meal_data = self.get_meal_data(
-                        i, section_title, meal_type, button)
-                    meals.append(meal_data)
+                    try:
+                        meal = self.get_meal(
+                            i, section_title, meal_type, button)
+                        meals.append(meal)
+                    except:
+                        continue
         
-        self.insert_into_db(meals)
+        while True:
+            try:
+                self.insert_into_db(meals)
+                break
+            except:
+                continue
         return meals
 
     def change_meal(self, meal_title: str):
@@ -252,28 +254,40 @@ class CampusDishParser:
             date_strs[days_of_week[i]] = date.strftime("%Y-%m-%d")
         return date_strs
 
+    def esc_apostrophes(self, meal: Dict[str, str]):
+        for key in meal.keys():
+            if type(meal[key]) == str and meal[key].find("'") != -1:
+                meal[key] = meal[key].replace("'", "''");
+        return meal
+    
+
     def insert_into_db(self, meal_data: List[Dict[str, Dict]]):
         date_strs = self.get_week_dates()
         database = HooEatsDatabase()
         for meal in meal_data:
+            meal = self.esc_apostrophes(meal)
+
             meal_date = date_strs[meal["day_of_week"]]
-            uva_meals_query = "INSERT INTO uva_meals (title, dining_hall, meal_type, meal_date, meal_description, section, serving_size, calories, calories_from_fat, total_fat, saturated_fat, sugar, protein, dietary_fiber, total_carbohydrates, sodium) VALUES ('{title}', '{dining_hall}', '{meal_type}', '{meal_date}', '{meal_description}', '{section}', '{serving_size}', {calories}, {calories_from_fat}, '{total_fat}', '{saturated_fat}', '{sugar}', '{protein}', '{dietary_fiber}', '{total_carbohydrates}', '{sodium}');".format(
-                title=meal["title"], dining_hall=self.dining_hall, meal_type=meal["type"], meal_date=meal_date, meal_description=meal["description"], section=meal["section"], serving_size=meal["serving_size"], calories=meal["calories"], calories_from_fat=meal["calories_from_fat"], total_fat=meal["total_fat"], saturated_fat=meal["saturated_fat"], sugar=meal["sugar"], protein=meal["protein"], dietary_fiber=meal["dietary_fiber"], total_carbohydrates=meal["total_carbohydrates"], sodium=meal["sodium"])
+
+            uva_description_select = "SELECT * FROM uva_descriptions WHERE title='{title}' AND section='{section}' AND dining_hall='{dining_hall}';".format(title=meal["title"], section=meal["section"], dining_hall=self.dining_hall);
+            select_results = database.execute(uva_description_select, expect_results=True)
+            if len(select_results) == 0:
+                uva_description_insert = "INSERT INTO uva_descriptions (title, dining_hall, section, serving_size, calories, calories_from_fat, total_fat, saturated_fat, sugar, protein, dietary_fiber, total_carbohydrates, sodium) VALUES ('{title}', '{dining_hall}', '{section}', '{serving_size}', {calories:.2f}, {calories_from_fat:.2f}, {total_fat:.2f}, {saturated_fat:.2f}, {sugar:.2f}, {protein:.2f}, {dietary_fiber:.2f}, {total_carbohydrates:.2f}, {sodium:.2f})".format(title=meal["title"], dining_hall=self.dining_hall, section=meal["section"], serving_size=meal["serving_size"], calories=meal["calories"], calories_from_fat=meal["calories_from_fat"], total_fat=meal["total_fat"], saturated_fat=meal["saturated_fat"], sugar=meal["sugar"], protein=meal["protein"], dietary_fiber=meal["dietary_fiber"], total_carbohydrates=meal["total_carbohydrates"], sodium=meal["sodium"])
+                database.execute(uva_description_insert, expect_results=False)
+
+
+            uva_meals_query = "INSERT INTO uva_meals (title, dining_hall, section, meal_type, meal_date) VALUES ('{title}', '{dining_hall}', '{section}', '{meal_type}', '{meal_date}')".format(title=meal["title"], dining_hall=self.dining_hall, section=meal["section"], meal_type=meal["type"], meal_date=meal_date)
             database.execute(uva_meals_query, expect_results=False)
         database.close()
 
 
 def main():
-    url = "https://virginia.campusdish.com/LocationsAndMenus/ObservatoryHillDiningRoom"
-    # url = "https://virginia.campusdish.com/en/locationsandmenus/freshfoodcompany/"
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")
     chrome_options.add_experimental_option("detach", True)
     chrome_driver = Service("../chromedriver.exe")
     driver = webdriver.Chrome(service=chrome_driver, options=chrome_options)
-    parser = CampusDishParser(driver, "Observatory Hill")
+    parser = CampusDishParser(driver, "Fresh Food Company")
     print(parser.parse_menu())
-    # print(parser.get_week_dates())
 
 
 if __name__ == "__main__":
