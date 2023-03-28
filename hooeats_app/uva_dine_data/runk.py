@@ -10,6 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 from selenium.webdriver.common.by import By
 import string
+from populator import insert_into_db
 
 
 class Runk:
@@ -49,10 +50,14 @@ class Runk:
         meal_type_buttons = self.driver.find_elements(By.CSS_SELECTOR, ".c-tabs-nav__link-inner")
         meal_type_buttons[index].click()
     
+    def get_num(self, nutritional_value: str) -> float:
+        space_index = nutritional_value.find(" ")
+        if space_index == -1 or not nutritional_value[:space_index].isdigit():
+            return 0.0
+        return float(space_index)
     
     def get_meal_data(self, station_title: str, date_str: str, meal_type: str, meal_link: WebElement):
         meal_data = {}
-        print(meal_link.get_attribute("innerText"))
         WebDriverWait(self.driver, 60).until(EC.element_to_be_clickable(meal_link))
         meal_link.click()
 
@@ -72,43 +77,43 @@ class Runk:
 
         meal_data["section"] = station_title
 
-        meal_data["day_of_the_week"] = days_of_week[datetime.strptime(date_str, "%Y-%m-%d").weekday()]
+        meal_data["day_of_week"] = days_of_week[datetime.strptime(date_str, "%Y-%m-%d").weekday()]
 
         serving_size = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > thead > tr > th").get_attribute("innerText")
         meal_data["serving_size"] = serving_size.replace("Amount Per Serving", "").strip()
 
         calories = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(1) > th").get_attribute("innerText")
-        meal_data["calories"] = int(calories.replace("Calories", "").replace(" ", ""))
+        meal_data["calories"] = float(calories.replace("Calories", "").replace(" ", ""))
 
         calories_from_fat = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(2) > th").get_attribute("innerText")
-        meal_data["calories_from_fat"] = int(calories_from_fat.replace("Calories from Fat", " ").strip())
+        meal_data["calories_from_fat"] = float(calories_from_fat.replace("Calories from Fat", " ").strip())
 
         total_fat = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(3) > th").get_attribute("innerText")
-        meal_data["total_fat"] = total_fat.replace("Total Fat", "").strip()
+        meal_data["total_fat"] = self.get_num(total_fat.replace("Total Fat", "").strip())
 
         saturated_fat = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(4) > th").get_attribute("innerText")
-        meal_data["saturated_fat"] = saturated_fat.replace("Saturated Fat", "").strip()
+        meal_data["saturated_fat"] = self.get_num(saturated_fat.replace("Saturated Fat", "").strip())
 
         trans_fat = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(5) > th").get_attribute("innerText")
         meal_data["trans_fat"] = trans_fat.replace("Trans Fat", "").strip()
 
         cholestorol = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(6) > th").get_attribute("innerText")
-        meal_data["cholesterol"] = cholestorol.replace("Cholesterol", "").strip()
+        meal_data["cholesterol"] = self.get_num(cholestorol.replace("Cholesterol", "").strip())
 
         sodium = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(7) > th").get_attribute("innerText")
-        meal_data["sodium"] = sodium.replace("Sodium", "").strip()
+        meal_data["sodium"] = self.get_num(sodium.replace("Sodium", "").strip())
 
         total_carbohydrates = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(8) > th").get_attribute("innerText")
-        meal_data["total_carbohydrates"] = total_carbohydrates.replace("Total Carbohydrate", "").strip()
+        meal_data["total_carbohydrates"] = self.get_num(total_carbohydrates.replace("Total Carbohydrate", "").strip())
 
         dietary_fiber = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(9) > th").get_attribute("innerText")
-        meal_data["dietary_fiber"] = dietary_fiber.replace("Dietary Fiber", "").strip()
+        meal_data["dietary_fiber"] = self.get_num(dietary_fiber.replace("Dietary Fiber", "").strip())
 
         sugar = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(10) > th").get_attribute("innerText")
-        meal_data["sugar"] = sugar.replace("Sugar", "").strip()
+        meal_data["sugar"] = self.get_num(sugar.replace("Sugar", "").strip())
 
         protein = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(11) > th").get_attribute("innerText")
-        meal_data["protein"] = protein.replace("Protein", "").strip()
+        meal_data["protein"] = self.get_num(protein.replace("Protein", "").strip())
 
         close_button = self.driver.find_element(By.CSS_SELECTOR, ".close-nutrition")
         close_button.click()
@@ -120,9 +125,8 @@ class Runk:
             for meal_link in meal_links[station]:
                 meal_type_data.append(self.get_meal_data(station, date_str, meal_type, meal_link))
         return meal_type_data
-
-
     
+
     def get_all_meals(self):
         self.driver.maximize_window()
         dates = self.get_week_dates()
@@ -137,9 +141,13 @@ class Runk:
                     self.driver.execute_script("window.scrollTo(0, 0);")
                 self.change_active_meal(i)
                 meal_links = self.get_meal_links()
+                meal_types_data = self.get_meal_type_data(meal_links, date, meal_type)
+                insert_into_db(meal_types_data, "Runk")
                 all_meals_data.extend(self.get_meal_type_data(meal_links, date, meal_type))
+
         
         return all_meals_data
+        
 
 def main():
     chrome_options = Options()
