@@ -55,10 +55,10 @@
                         <div class="card-header">
                             {{ dining_hall_title }}
                         </div>
-                        <div class="card-body">
+                        <div class="card-body d-flex flex-column">
                             <h5 class="card-title section-title">{{ menu_item.title }}</h5>
                             <p class="card-text"> {{ menu_item.description }}</h5>
-                            <div class="d-flex d-row mt-3">
+                            <div class="d-flex d-row mt-auto">
                                 <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
                                     <i class="bi bi-box-arrow-up-right"></i>
                                     View More
