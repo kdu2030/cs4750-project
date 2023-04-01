@@ -147,7 +147,7 @@ def remove_bookmark(request: HttpRequest) -> JsonResponse:
         database = HooEatsDatabase(secure=True)
         database.execute_secure(False, query, username, meal_id)
         database.close()
-        return JsonResponse({"result": "Insertion Successful"})
+        return JsonResponse({"result": "Deletion Successful"})
     except:
         return JsonResponse({"result": "Database Error"})
         

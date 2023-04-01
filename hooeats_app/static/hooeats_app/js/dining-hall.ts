@@ -191,7 +191,7 @@ const removeBookmark = (mealId: number, mealTitle: string) => {
     };
     postToDiningHallAPI("/api/dining-hall/remove-bookmark/", data)
     .then((response: APIResponse) => {
-        if(response.result === "Insertion Successful"){
+        if(response.result === "Deletion Successful"){
             const header = `<i class="bi bi-bookmark-x me-3"></i> Successfully Removed Bookmark`;
             const message = `<p>We successfully removed ${mealTitle} from your bookmarks.`;
             addToast(header, message, true);
