@@ -16,11 +16,6 @@
 </head>
 <body>
 
-    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3 z-50">
-        <div class="toast" id="success-toast" role="alert" aria-live="assertive" aria-atomic="true">
-        </div>
-    </div>
-
     <nav class="navbar navbar-expand-lg d-flex justify-content-between align-items-center">
         <div class="logo-menu d-flex flex-row ms-3">
             <button type="button" class="menu-button btn border-end border-2" data-bs-toggle="offcanvas" href="#nav-menu">
@@ -65,6 +60,18 @@
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group w-100 list-group-flush mt-2">
+                <a href="{% url 'dining_hall' 'Observatory Hill'%}" class="list-group-item list-group-item-action">
+                    <i class="bi bi-cup-straw"></i>
+                    Observatory Hill
+                </a>
+                <a href="{% url 'dining_hall' 'Fresh Food Company'%}" class="list-group-item list-group-item-action">
+                    <i class="bi bi-cup-straw"></i>
+                    Fresh Food Company
+                </a>
+                <a href="{% url 'dining_hall' 'Runk'%}" class="list-group-item list-group-item-action">
+                    <i class="bi bi-cup-straw"></i>
+                    Runk
+                </a>
                 {% if "user" not in request.COOKIES %}
                    <a href="{% url 'signin' %}" class="list-group-item list-group-item-action">
                      <i class="bi bi-box-arrow-in-right me-2"></i>
@@ -86,5 +93,11 @@
     </div>
 
     {% block content %} {% endblock %}
+
+    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3 z-50">
+        <div class="toast" id="success-toast" role="alert" aria-live="assertive" aria-atomic="true">
+        </div>
+    </div>
+
 </body>
 </html>

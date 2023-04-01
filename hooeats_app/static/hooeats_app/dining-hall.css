@@ -1,0 +1,16 @@
+.section-items{
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.card {
+    width: 300px;
+}
+
+.dining-halls{
+    width: 75vw;
+}
+
+.bookmark-buttons{
+    width: 120px;
+}

@@ -73,8 +73,8 @@ const checkUnique = async (): Promise<boolean> => {
             emailField.reportValidity();
             return false;
         default:
-            const header = `<i class="bi bi-x-circle-fill"></i> Unable to Connect`
-            const message = "We were unable to reach our servers. Please try again."
+            const header = `<i class="bi bi-x-circle-fill"></i> Unable to Connect`;
+            const message = "We were unable to reach our servers. Please try again.";
             addToastToPage(header, message, false);
             return false;
     }
