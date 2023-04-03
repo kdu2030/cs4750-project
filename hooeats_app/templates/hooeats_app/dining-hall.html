@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head_title %} {{ dining_hall_title }} {% endblock head_title %}
+
+{% block head_content %}
+<link rel="stylesheet" href="{% static 'hooeats_app/dining-hall.css' %}" />
+<script src="{% static 'hooeats_app/js/dining-hall.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<div id="data">
+    {% csrf_token %}
+</div>
+
+<div class="d-flex justify-content-center">
+    <div class="dining-halls mt-3 flex flex-col">
+
+        <h2 class="text-success">{{ dining_hall_title }} </h2>
+
+        <div class="date-select d-flex flex-row w-25 align-items-center justify-content-center ms-auto">
+            <p class="me-3 my-0">
+                <i class="bi bi-calendar me-2"></i>
+                <strong>Date</strong>
+            </p>
+            <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                {{ selected_date }}
+            </button>
+            <ul class="dropdown-menu">
+                {% for date in date_links %}
+                    <li><a class="dropdown-item" href="{% url 'dining_hall_date' dining_hall_title date.date_link %}" />{{ date.date_text }}</a></li>
+                {% endfor %}
+            </ul>
+
+        </div>
+
+        <div class="d-flex flex-row mb-3">
+            {% for meal_type in meal_types %}
+                {% if meal_type.meal_type == selected_meal %}
+                    <button class="btn btn-success me-3" type="button" onclick="window.open('{% url 'dining_hall_meal' dining_hall_title selected_date_link meal_type.meal_type %}')">{{ meal_type.meal_type}}</button>
+                {% else %}
+                    <button class="btn btn-outline-success me-3" onclick="window.open('{% url 'dining_hall_meal' dining_hall_title selected_date_link meal_type.meal_type %}')">{{ meal_type.meal_type }}</button>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        {% for section in sections %}
+        <div class="section mb-3">
+            <h2 class="mb-2">{{ section }}</h2>
+            <div class="section-items">
+                {% for menu_item in menu_items %}
+                    {% if menu_item.section == section %}
+                    <div class="card mb-3 me-3">
+                        <div class="card-header">
+                            {{ dining_hall_title }}
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title section-title">{{ menu_item.title }}</h5>
+                            <p class="card-text"> {{ menu_item.description }}</h5>
+                            <div class="d-flex d-row mt-auto">
+                                <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
+                                    <i class="bi bi-box-arrow-up-right"></i>
+                                    View More
+                                </button>
+                                {% if "user" in request.COOKIES and menu_item.is_bookmarked %}
+                                    <button class="d-none btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ menu_item.meal_id }}" onclick="addBookmark({{menu_item.meal_id}}, '{{ menu_item.title }}');">
+                                        <i class="bi bi-bookmark"></i>
+                                        Bookmark
+                                    </button>
+                                    <button class="d-block btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ menu_item.meal_id }}" onclick="removeBookmark({{menu_item.meal_id}}, '{{ menu_item.title }}');">
+                                        <i class="bi bi-bookmark-x"></i>
+                                        Remove
+                                    </button>
+                                {% elif "user" in request.COOKIES %}
+                                    <button class="btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ menu_item.meal_id }}" onclick="addBookmark({{menu_item.meal_id}}, '{{ menu_item.title }}');">
+                                        <i class="bi bi-bookmark"></i>
+                                        Bookmark
+                                    </button>
+                                    <button class="d-none btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ menu_item.meal_id }}" onclick="removeBookmark({{menu_item.meal_id}}, '{{ menu_item.title }}');">
+                                        <i class="bi bi-bookmark-x"></i>
+                                        Remove
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+<div class="modal fade" id="nutrition-details" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="meal-title">Sample Meal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="meal-description"></p>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td><strong>Amount Per Serving</strong></td>
+                            <td id="serving-size"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Calories</strong></td>
+                            <td id="calories"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Calories From Fat</strong></td>
+                            <td id="calories-from-fat"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Fat</strong></td>
+                            <td id="total-fat"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Saturated Fat</strong></td>
+                            <td id="saturated-fat"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cholestorol</strong></td>
+                            <td id="cholesterol">Cholesterol</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sodium</strong></td>
+                            <td id="sodium"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Carbohydrates</strong></td>
+                            <td id="total-carbohydrates"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Protein</strong></td>
+                            <td id="protein"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sugar</strong></td>
+                            <td id="sugar"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dietary Fiber</strong></td>
+                            <td id="dietary-fiber"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
