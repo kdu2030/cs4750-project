@@ -141,8 +141,11 @@ class Runk:
                     self.driver.execute_script("window.scrollTo(0, 0);")
                 self.change_active_meal(i)
                 meal_links = self.get_meal_links()
-                meal_types_data = self.get_meal_type_data(meal_links, date, meal_type)
-                insert_into_db(meal_types_data, "Runk")
+                try:
+                    meal_types_data = self.get_meal_type_data(meal_links, date, meal_type)
+                    insert_into_db(meal_types_data, "Runk")
+                except:
+                    continue
                 all_meals_data.extend(self.get_meal_type_data(meal_links, date, meal_type))
 
         
