@@ -8,4 +8,4 @@ def index(request: HttpRequest) -> HttpResponse:
     return render(request, "hooeats_app/index.html")
 
 def recipes(request: HttpRequest) -> HttpResponse:
-    return render(request, "hooeats_app/index.html")
+    return render(request, "hooeats_app/recipes.html")
