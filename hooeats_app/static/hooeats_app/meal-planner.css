@@ -1,0 +1,19 @@
+.row-min-h{
+    height: 150px;
+}
+
+.meal-plan-table-wrapper{
+    overflow: scroll;
+}
+
+.meal-plan-table{
+    table-layout: fixed;
+}
+
+.meal-plan-table thead th{
+    width: 200px;
+}
+
+.meal-plan-table thead th.meal-type-col {
+    width: 100px;
+}

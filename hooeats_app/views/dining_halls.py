@@ -4,15 +4,7 @@ from hooeats_app.db_utils.database import HooEatsDatabase
 from typing import Dict, List
 from datetime import datetime, timedelta
 import json
-
-def get_week_dates(start_date_str: datetime) -> Dict[str, str]:
-        start_date = datetime.strptime(start_date_str, "%m/%d/%Y")
-        start_of_week = start_date - timedelta(days=((start_date.weekday())))
-        date_strs = []
-        for i in range(7):
-            date = start_of_week + timedelta(days=i)
-            date_strs.append(date.strftime("%m/%d/%Y"))
-        return date_strs
+from hooeats_app.date_utils.week_dates import get_week_dates
 
 def get_bookmarked_meals(database: HooEatsDatabase, username: str) -> List[Dict]:
      query = "SELECT meal_id FROM bookmark_meals WHERE username=?"
