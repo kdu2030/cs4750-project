@@ -8,6 +8,7 @@ from hooeats_app.db_utils.database import HooEatsDatabase
 from datetime import datetime, timedelta
 from hooeats_app.date_utils.week_dates import get_week_start
 from traceback import print_exc
+import copy
     
 
 def get_meal_plan(username: str) -> Dict:
@@ -24,10 +25,17 @@ def get_meal_plan(username: str) -> Dict:
              return context
         
         context["selected_meal_plan"] = meal_plans[0]
-        bookmarked_meals_query = "SELECT meal_id, title, description FROM bookmark_meals NATURAL JOIN uva_meals NATURAL JOIN uva_descriptions WHERE username=? AND meal_date BETWEEN ? AND ?;"
-        bookmarked_meals = database.execute_secure(True, bookmarked_meals_query, username, meal_plans[0]["week_start"].strftime("%Y-%m-%d"), (meal_plans[0]["week_start"] + timedelta(days=6)).strftime("%Y-%m-%d"))
+        
+        bookmarked_meals_query = "SELECT * FROM bookmark_meals NATURAL JOIN uva_meals NATURAL JOIN uva_descriptions WHERE username=? AND meal_date BETWEEN ? AND ?;"
+        bookmarked_meals = database.execute_secure(True, bookmarked_meals_query, username, context["selected_meal_plan"]["week_start"].strftime("%Y-%m-%d"), (context["selected_meal_plan"]["week_start"] + timedelta(days=6)).strftime("%Y-%m-%d"))
+        for bookmarked_meal in bookmarked_meals:
+            bookmarked_meal["meal_date"] = bookmarked_meal["meal_date"].strftime("%m/%d/%Y")
         context["bookmarked_meals"] = bookmarked_meals
         database.close()
+
+        context["selected_meal_plan_data"] = copy.deepcopy(context["selected_meal_plan"])
+        context["selected_meal_plan_data"]["week_start"] = context["selected_meal_plan_data"]["week_start"].strftime("%m/%d/%Y")
+
         return context
     except:
         print_exc()

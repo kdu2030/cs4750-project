@@ -28,16 +28,18 @@ def get_dining_hall_data(dining_hall: str, selected_date:str = "", selected_meal
              "date_link": link,
         }
         date_links.append(date_dict)
-    
-    section_query = "SELECT DISTINCT section FROM uva_meals WHERE dining_hall=?;"
-    meal_type_query = "SELECT DISTINCT meal_type FROM uva_meals WHERE dining_hall=? AND meal_date=? "
 
     database = HooEatsDatabase(secure=True)
-    sections = database.execute_secure(True, section_query, dining_hall)
+    meal_type_query = "SELECT DISTINCT meal_type FROM uva_meals WHERE dining_hall=? AND meal_date=?;"
     meal_types = database.execute_secure(True, meal_type_query, dining_hall, datetime.strptime(selected_date, "%m/%d/%Y").strftime("%Y-%m-%d"))
-
+    
     if selected_meal == "" and len(meal_types) > 0:
         selected_meal = meal_types[0]["meal_type"]
+    
+    section_query = "SELECT DISTINCT section FROM uva_meals WHERE dining_hall=? AND meal_type=?;"
+    sections = database.execute_secure(True, section_query, dining_hall, selected_meal)
+    
+
 
     all_menu_items = []
 
@@ -45,8 +47,8 @@ def get_dining_hall_data(dining_hall: str, selected_date:str = "", selected_meal
     for section_row in sections:
          date = datetime.strptime(selected_date, "%m/%d/%Y")
          date_str = datetime.strftime(date, "%Y-%m-%d")
-         item_query = "SELECT uva_meals.meal_id, uva_meals.title, uva_meals.section, uva_descriptions.description FROM uva_meals NATURAL JOIN uva_descriptions WHERE meal_date=? AND dining_hall=? AND section=?"
-         items = database.execute_secure(True, item_query, date_str, dining_hall.title(), section_row["section"])
+         item_query = "SELECT uva_meals.meal_id, uva_meals.title, uva_meals.section, uva_descriptions.description FROM uva_meals NATURAL JOIN uva_descriptions WHERE meal_date=? AND dining_hall=? AND section=? AND meal_type=?"
+         items = database.execute_secure(True, item_query, date_str, dining_hall.title(), section_row["section"], selected_meal)
          all_menu_items.extend(items)
     
 

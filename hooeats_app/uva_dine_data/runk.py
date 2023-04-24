@@ -97,8 +97,8 @@ class Runk:
         trans_fat = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(5) > th").get_attribute("innerText")
         meal_data["trans_fat"] = trans_fat.replace("Trans Fat", "").strip()
 
-        cholestorol = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(6) > th").get_attribute("innerText")
-        meal_data["cholesterol"] = self.get_num(cholestorol.replace("Cholesterol", "").strip())
+        cholesterol = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(6) > th").get_attribute("innerText")
+        meal_data["cholesterol"] = self.get_num(cholesterol.replace("Cholesterol", "").strip())
 
         sodium = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(7) > th").get_attribute("innerText")
         meal_data["sodium"] = self.get_num(sodium.replace("Sodium", "").strip())
