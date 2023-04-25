@@ -11,9 +11,21 @@
 }
 
 .meal-plan-table thead th{
-    width: 200px;
+    width: 250px;
 }
 
 .meal-plan-table thead th.meal-type-col {
     width: 100px;
+}
+
+.meal-planner{
+    min-height: 1000px;
+}
+
+.bookmarks-sticky-top {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 10px;
+    z-index: 1020;
+    align-self: flex-start;
 }
