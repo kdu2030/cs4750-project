@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import views
-from .views import auth, dining_halls
+from .views import auth, dining_halls, recipes
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -18,5 +18,5 @@ urlpatterns = [
     path("api/dining-hall/<str:title>/<str:dining_hall>/<str:section>/", dining_halls.fetch_nutritional_data, name="meal_nutrition"),
     path("api/dining-hall/insert-bookmark/", dining_halls.insert_bookmark, name="insert_bookmark"),
     path("api/dining-hall/remove-bookmark/", dining_halls.remove_bookmark, name="remove_bookmark"),
-    path("recipes", views.recipes, name="recipes")
+    path("recipes", recipes.recipe, name="recipes")
 ]
