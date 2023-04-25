@@ -35,6 +35,17 @@ def get_meal_plan(username: str) -> Dict:
         for uva_meal in uva_meals_in_plan:
             uva_meal["week_offset"] = (uva_meal["date"] - context["selected_meal_plan"]["week_start"]).days
             uva_meal["meal_date"] = uva_meal["meal_date"].strftime("%m/%d/%Y")
+
+        # Get data for meal plan items
+        uva_meals_data = copy.deepcopy(uva_meals_in_plan)
+        columns = {"plan_id", "item_id", "date", "plan_meal_type", "week_offset"}
+        for meal_data in uva_meals_data:
+            keys = list(meal_data.keys())
+            for column in keys:
+                if column in columns:
+                    del meal_data[column]
+                
+
         
         context["uva_meals_in_plan"] = uva_meals_in_plan
 
@@ -49,12 +60,30 @@ def get_meal_plan(username: str) -> Dict:
         
         database.close()
 
+        # Union together bookmarked_meals and uva_meals_data
+        all_uva_meals = set()
+        bookmarked_meals_set = set()
+        for uva_meal in uva_meals_data:
+            all_uva_meals.add(json.dumps(uva_meal))
+
+        for bookmarked_meal in bookmarked_meals:
+            bookmarked_meals_set.add(json.dumps(bookmarked_meal))
+        
+        all_uva_meals = all_uva_meals.union(bookmarked_meals_set)
+        
+        all_uva_meals = list(all_uva_meals)
+        for i, meal_str in enumerate(all_uva_meals):
+            all_uva_meals[i] = json.loads(meal_str)
+            
+        context["all_uva_meals_data"] = all_uva_meals
+
         # Necessary because can't convert datetime objects to JSON
         context["selected_meal_plan_data"] = copy.deepcopy(
             context["selected_meal_plan"])
         context["selected_meal_plan_data"]["week_start"] = context["selected_meal_plan_data"]["week_start"].strftime(
             "%m/%d/%Y")
 
+        #TODO: Union together bookmarked_meals and uva_meals - This may require a new query
         return context
     except:
         print_exc()
@@ -82,8 +111,25 @@ def create_meal_plan(request: HttpRequest) -> HttpResponse:
     database.close()
     return redirect(reverse("meal_planner"))
 
+def update_meal_plan(request: HttpRequest) -> HttpResponse:
+    plan_name = request.POST.get("plan_name")
+    plan_id = request.POST.get("plan_id")
+    update_meal_plan_query = "UPDATE meal_plan SET plan_name=? WHERE plan_id=?;"
+    database = HooEatsDatabase(secure=True)
+    database.execute_secure(True, update_meal_plan_query, plan_name, plan_id)
+    database.close()
+    # TODO: Should redirect based on plan_id
+    return redirect(reverse("meal_planner"))
 
-def insert_uva_meal(request: HttpRequest) -> HttpResponse:
+def delete_meal_plan(request: HttpRequest) -> HttpResponse:
+    plan_id = request.POST.get("plan_id")
+    delete_meal_plan_query = "DELETE FROM meal_plan WHERE plan_id=?;"
+    database = HooEatsDatabase(secure=True)
+    database.execute_secure(True, delete_meal_plan_query, plan_id)
+    database.close()
+    return redirect(reverse("meal_planner"))
+
+def insert_uva_meal(request: HttpRequest) -> JsonResponse:
     data = json.loads(request.body)
     max_id_query = "SELECT MAX(item_id) FROM meal_item;"
     create_meal_item_query = "INSERT INTO meal_item (plan_id, item_id, meal_id, date, plan_meal_type) VALUES (?, ?, ?, ?, ?)"
@@ -96,9 +142,31 @@ def insert_uva_meal(request: HttpRequest) -> HttpResponse:
             new_id = max_id[0]["MAX(item_id)"] + 1
         database.execute_secure(False, create_meal_item_query, data["plan_id"], new_id, data["meal_id"], data["date"], data["meal_type"])
         database.close()
-        return JsonResponse({"result": "Insertion successful"})
+        return JsonResponse({"result": new_id})
     except:
         print_exc()
+        return JsonResponse({"result": "Database error"})
+    
+def update_uva_meal(request: HttpRequest) -> JsonResponse:
+    data = json.loads(request.body)
+    update_query = "UPDATE meal_item SET date=?, plan_meal_type=? WHERE item_id=?"
+    try:
+        database = HooEatsDatabase(secure=True)
+        database.execute_secure(False, update_query, data["date"], data["plan_meal_type"], data["item_id"])
+        database.close()
+        return JsonResponse({"result": "Update successful"})
+    except:
+        return JsonResponse({"result": "Database error"})
+
+def delete_uva_meal(request: HttpRequest) -> JsonResponse:
+    data = json.loads(request.body)
+    delete_query = "DELETE FROM meal_item WHERE item_id=?"
+    try:
+        database = HooEatsDatabase(secure=True)
+        database.execute_secure(False, delete_query, data["item_id"])
+        database.close()
+        return JsonResponse({"result": "Delete successful"})
+    except:
         return JsonResponse({"result": "Database error"})
      
     

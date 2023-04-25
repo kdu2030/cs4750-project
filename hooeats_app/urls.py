@@ -16,10 +16,14 @@ urlpatterns = [
     path("handle-signin/", auth.handle_signin, name="handle_signin"),
     path("handle-signup/", auth.handle_signup, name="handle_signup"),
     path("meal-planner/", meal_planner.meal_planner, name="meal_planner"),
-    path("create-meal-plan", meal_planner.create_meal_plan, name="create_meal_plan"),
+    path("create-meal-plan/", meal_planner.create_meal_plan, name="create_meal_plan"),
+    path("update-meal-plan/", meal_planner.update_meal_plan, name="update_meal_plan"),
+    path("delete-meal-plan", meal_planner.delete_meal_plan, name="delete_meal_plan"),
     path("api/signup-valid/", auth.signup_valid, name="signup_valid"),
     path("api/dining-hall/<str:title>/<str:dining_hall>/<str:section>/", dining_halls.fetch_nutritional_data, name="meal_nutrition"),
     path("api/dining-hall/insert-bookmark/", dining_halls.insert_bookmark, name="insert_bookmark"),
     path("api/dining-hall/remove-bookmark/", dining_halls.remove_bookmark, name="remove_bookmark"),
-    path("api/meal-planner/insert-uva-meal/", meal_planner.insert_uva_meal, name="insert_uva_meal")
+    path("api/meal-planner/insert-uva-meal/", meal_planner.insert_uva_meal, name="insert_uva_meal"),
+    path("api/meal-planner/update-uva-meal/", meal_planner.update_uva_meal, name="update_uva_meal"),
+    path("api/meal-planner/delete-uva-meal/", meal_planner.delete_uva_meal, name="delete_uva_meal")
 ]

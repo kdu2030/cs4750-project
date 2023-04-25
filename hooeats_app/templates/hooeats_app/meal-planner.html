@@ -6,6 +6,7 @@
 {% block head_content %}
     <link rel="stylesheet" href="{% static 'hooeats_app/meal-planner.css' %}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.6.6/dragula.min.css" integrity="sha512-49xW99xceMN8dDoWaoCaXvuVMjnUctHv/jOlZxzFSMJYhqDZmSF/UnM6pLJjQu0YEBLSdO1DP0er6rUdm8/VqA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 {% endblock %}
 
 {% block content %}
@@ -18,7 +19,7 @@
             {% to_json selected_meal_plan_data %}
         </div>
         <div id="bookmarked-meals-data">
-            {% to_json bookmarked_meals %}
+            {% to_json all_uva_meals_data %}
         </div>
     </div>
 
@@ -106,11 +107,11 @@
                             <i class="bi bi-calendar-plus"></i>
                             Create Meal Plan
                         </button>
-                        <button class="btn btn-outline-success me-3">
+                        <button class="btn btn-outline-success me-3" data-bs-toggle="modal" data-bs-target="#update-meal-plan">
                             <i class="bi bi-gear"></i>
                             Meal Plan Settings
                         </button>
-                        <button class="btn btn-outline-danger me-3">
+                        <button class="btn btn-outline-danger me-3" data-bs-toggle="modal" data-bs-target="#delete-meal-plan">
                             <i class="bi bi-calendar-x"></i>
                             Delete meal plan
                         </button>
@@ -143,7 +144,7 @@
                                         <td class="meal-plan-cell" data-date=1 data-meal-type="Breakfast">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 0 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -163,7 +164,7 @@
                                         <td class="meal-plan-cell" data-date=2 data-meal-type="Breakfast">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 1 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -183,7 +184,7 @@
                                         <td class="meal-plan-cell" data-date=3 data-meal-type="Breakfast">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 2 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -203,7 +204,7 @@
                                         <td class="meal-plan-cell" data-date=4 data-meal-type="Breakfast">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 3 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -223,7 +224,7 @@
                                         <td class="meal-plan-cell" data-date=5 data-meal-type="Breakfast">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 4 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -242,7 +243,7 @@
                                         <td class="meal-plan-cell" data-date=6 data-meal-type="Breakfast">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 5 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -262,7 +263,7 @@
                                         <td class="meal-plan-cell" data-date=0 data-meal-type="Breakfast">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 6 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -286,7 +287,7 @@
                                         <td class="meal-plan-cell" data-date=1 data-meal-type="Lunch">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 0 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -306,7 +307,7 @@
                                         <td class="meal-plan-cell" data-date=2 data-meal-type="Lunch">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 1 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -326,7 +327,7 @@
                                         <td class="meal-plan-cell" data-date=3 data-meal-type="Lunch">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 2 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -346,7 +347,7 @@
                                         <td class="meal-plan-cell" data-date=4 data-meal-type="Lunch">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 3 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -366,7 +367,7 @@
                                         <td class="meal-plan-cell" data-date=5 data-meal-type="Lunch">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 4 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -385,7 +386,7 @@
                                         <td class="meal-plan-cell" data-date=6 data-meal-type="Lunch">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 5 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -405,7 +406,7 @@
                                         <td class="meal-plan-cell" data-date=0 data-meal-type="Lunch">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 6 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -428,7 +429,7 @@
                                         <td class="meal-plan-cell" data-date=1 data-meal-type="Dinner">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 0 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -448,7 +449,7 @@
                                         <td class="meal-plan-cell" data-date=2 data-meal-type="Dinner">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 1 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -468,7 +469,7 @@
                                         <td class="meal-plan-cell" data-date=3 data-meal-type="Dinner">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 2 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -488,7 +489,7 @@
                                         <td class="meal-plan-cell" data-date=4 data-meal-type="Dinner">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 3 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -508,7 +509,7 @@
                                         <td class="meal-plan-cell" data-date=5 data-meal-type="Dinner">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 4 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -527,7 +528,7 @@
                                         <td class="meal-plan-cell" data-date=6 data-meal-type="Dinner">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 5 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -547,7 +548,7 @@
                                         <td class="meal-plan-cell" data-date=0 data-meal-type="Dinner">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 6 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -570,7 +571,7 @@
                                         <td class="meal-plan-cell" data-date=1 data-meal-type="Snacks">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 0 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -590,7 +591,7 @@
                                         <td class="meal-plan-cell" data-date=2 data-meal-type="Snacks">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 1 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -610,7 +611,7 @@
                                         <td class="meal-plan-cell" data-date=3 data-meal-type="Snacks">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 2 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -630,7 +631,7 @@
                                         <td class="meal-plan-cell" data-date=4 data-meal-type="Snacks">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 3 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -650,7 +651,7 @@
                                         <td class="meal-plan-cell" data-date=5 data-meal-type="Snacks">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 4 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -669,7 +670,7 @@
                                         <td class="meal-plan-cell" data-date=6 data-meal-type="Snacks">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 5 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -689,7 +690,7 @@
                                         <td class="meal-plan-cell" data-date=0 data-meal-type="Snacks">
                                             {% for meal in uva_meals_in_plan %}
                                                 {% if meal.week_offset == 6 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
                                                         <div class="card-header">
                                                             {{ meal.dining_hall }}
                                                         </div>
@@ -734,6 +735,46 @@
 
                     <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Create Meal Plan</button>
 
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tab-index="-1" id="update-meal-plan">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ selected_meal_plan.plan_name }} Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'update_meal_plan' %}">
+                    {% csrf_token %}
+                    <label class="form-label" for="plan-name">Meal Plan Name</label>
+                    <input type="text" class="form-control mb-3" name="plan_name" placeholder="e.g. Meal Plan 4/12" />
+                    <input type="hidden" name="plan_id" value="{{ selected_meal_plan.plan_id }}" />
+                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Update Meal Plan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tab-index="-1" id="delete-meal-plan">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete {{ selected_meal_plan.plan_name }}?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'delete_meal_plan' %}">
+                    {% csrf_token %}
+                    <p>You are about to delete {{ selected_meal_plan.plan_name }}. This action is irreversible. Do you want to continue?</p>
+                    <input type="hidden" name="plan_id" value="{{ selected_meal_plan.plan_id }}" />
+                    <button type="submit" class="btn btn-outline-success me-1" data-bs-dismiss="modal">Yes</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">No</button>
                 </form>
             </div>
         </div>

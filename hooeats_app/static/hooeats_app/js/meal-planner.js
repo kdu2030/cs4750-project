@@ -45,9 +45,9 @@ const addToast = (header, message, successful) => {
     setTimeout(() => { toastContainer.removeChild(toast) }, 5000);
 }
 
-const getBookmarkedMeals = () => {
-    const bookmarkedMealsElement = document.getElementById("bookmarked-meals-data");
-    const mealsData = JSON.parse(bookmarkedMealsElement.innerText)
+const getMealData = () => {
+    const mealDataElement = document.getElementById("bookmarked-meals-data");
+    const mealsData = JSON.parse(mealDataElement.innerText)
     const mealsMap = new Map();
     mealsData.forEach((meal) => {
         mealsMap.set(meal.meal_id, meal);
@@ -68,7 +68,7 @@ const getDateByOffset = (weekStart, offset) => {
 }
 
 const checkMealDate = (element, target) => {
-    const bookmarkedMeals = getBookmarkedMeals();
+    const bookmarkedMeals = getMealData();
     const targetDay = Number.parseInt(target.getAttribute("data-date"));
     const mealId = Number.parseInt(element.getAttribute("data-meal-id"));
     const mealDate = new Date(bookmarkedMeals.get(mealId).meal_date);
@@ -91,7 +91,7 @@ const checkAcceptDrop = (element, target, source, sibling) => {
 }
 
 const showMealData = (mealId) => {
-    const bookmarkedMeals = getBookmarkedMeals();
+    const bookmarkedMeals = getMealData();
     const nutritionData = bookmarkedMeals.get(mealId);
 
     const modalElements = {
@@ -133,9 +133,9 @@ const showMealData = (mealId) => {
 }
 
 const addMealItem = (mealElement, target) => {
-    const bookmarkedMeals = getBookmarkedMeals();
+    const allMealsData = getMealData();
     const mealId = Number.parseInt(mealElement.getAttribute("data-meal-id"));
-    const mealData = bookmarkedMeals.get(mealId);
+    const mealData = allMealsData.get(mealId);
     const mealType = target.getAttribute("data-meal-type");
     const mealPlanData = getMealPlanData()
     const planId = mealPlanData.plan_id;
@@ -153,7 +153,8 @@ const addMealItem = (mealElement, target) => {
     };
     postToApi("/api/meal-planner/insert-uva-meal/", data)
     .then((response) => {
-        if(response["result"] === "Insertion successful"){
+        if(response["result"] !== "Database error"){
+            mealElement.setAttribute("data-plan-item-id", response["result"]);
             const header = `<i class="bi bi-file-earmark-plus me-3"></i> Added Meal to Meal Plan`;
             const message = `Added ${mealData.title} to ${mealPlanData.plan_name}`;
             addToast(header, message, true);
@@ -162,13 +163,71 @@ const addMealItem = (mealElement, target) => {
             const header = `<i class="bi bi-file-earmark-excel me-3"></i> Unable to Add Meal to Meal Plan`;
             const message = `Unable to add ${mealData.title} to ${mealPlanData.plan_name}`;
             addToast(header, message, false);
+            mealElement.setAttribute("data-fade-out", 1); 
+            $("div[data-fade-out='1']").fadeOut(800, () => mealElement.remove());
         }
     })
        
 }
 
+const updateMealItem = (mealElement, target) => {
+    const allMealsData = getMealData();
+    const mealId = Number.parseInt(mealElement.getAttribute("data-meal-id"));
+    const mealData = allMealsData.get(mealId);
+    const mealItemId = mealElement.getAttribute("data-plan-item-id");
+    const mealType = target.getAttribute("data-meal-type");
+    const mealPlanData = getMealPlanData();
+    let offset = Number.parseInt(target.getAttribute("data-date")) - 1;
+    if(offset < 0){
+        offset = 6;
+    }
+    const date = getDateByOffset(mealPlanData.week_start, offset);
+    const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, 0)}-${date.getDate()}`
+    const data = {
+        date: dateStr,
+        plan_meal_type: mealType,
+        item_id: mealItemId
+    }
+    postToApi("/api/meal-planner/update-uva-meal/", data)
+    .then((response) => {
+        if(response["result"] === "Update successful"){
+            const header = `<i class="bi bi-file-earmark-plus me-3"></i> Updated Meal Successfully`;
+            const message = `Updated ${mealData.title}`;
+            addToast(header, message, true);
+        }
+        else{
+            const header = `<i class="bi bi-file-earmark-excel me-3"></i> Unable to Update Meal`;
+            const message = `Unable to update ${mealData.title}`;
+            addToast(header, message, false);
+        }
+    })
+}
+
+const deleteMealItem = (mealElement) => {
+    const allMealsData = getMealData();
+    const mealId = Number.parseInt(mealElement.getAttribute("data-meal-id"));
+    const mealData = allMealsData.get(mealId);
+    const mealItemId = mealElement.getAttribute("data-plan-item-id");
+    const data = {
+        item_id: mealItemId
+    };
+    postToApi("/api/meal-planner/delete-uva-meal/", data)
+    .then((response) => {
+        if(response["result"] === "Delete successful"){
+            const header = `<i class="bi bi-file-earmark-plus me-3"></i> Deleted Meal Successfully`;
+            const message = `Deleted ${mealData.title}`;
+            addToast(header, message, true);
+        }
+        else{
+            const header = `<i class="bi bi-file-earmark-excel me-3"></i> Unable to Delete Meal`;
+            const message = `Unable to delete ${mealData.title}`;
+            addToast(header, message, false);
+        }
+    })
+}
+
 const handleDrop = (element, target, source) => {
-    const sourceClasses = [...source.classList]
+    const sourceClasses = [...source.classList];
     const targetClasses = [...target.classList];
     const elementClasses = [...element.classList];
 
@@ -176,6 +235,21 @@ const handleDrop = (element, target, source) => {
     if(sourceClasses.includes("meal-card") && targetClasses.includes("meal-plan-cell") && elementClasses.includes("uva-dining-meal")){
         addMealItem(element, target);
     }
+    else if(sourceClasses.includes("meal-plan-cell") && targetClasses.includes("meal-plan-cell") && elementClasses.includes("uva-dining-meal")){
+        // The user is updating a UVA Dining Hall Meal - different meal time
+        updateMealItem(element, target);
+    }
+}
+
+const handleRemove = (element) => {
+    const elementClasses = [...element.classList];
+    
+    // We are trying to delete a UVA Dining Hall Meal
+    if(elementClasses.includes("uva-dining-meal")){
+        deleteMealItem(element);
+    }
+
+
 }
 
 const initDragAndDrop = () => {
@@ -186,6 +260,7 @@ const initDragAndDrop = () => {
         removeOnSpill: true
     })
     dragAndDrop.on("drop", handleDrop);
+    dragAndDrop.on("remove", handleRemove);
 }
 
 window.addEventListener("load", initDragAndDrop);
