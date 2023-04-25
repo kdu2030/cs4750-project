@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import views
-from .views import auth, dining_halls
+from .views import auth, dining_halls, search_results
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -12,6 +12,7 @@ urlpatterns = [
     path("dining-hall/<str:dining_hall>/", dining_halls.dining_hall, name="dining_hall"),
     path("dining-hall/<str:dining_hall>/<str:date_str>/", dining_halls.dining_hall_date, name="dining_hall_date"),
     path("dining-hall/<str:dining_hall>/<str:date_str>/<str:meal_type>/", dining_halls.dining_hall_meal, name="dining_hall_meal"),
+    path("search/", search_results.search_results_view, name="search_results"),
     path("handle-signin", auth.handle_signin, name="handle_signin"),
     path("handle-signup", auth.handle_signup, name="handle_signup"),
     path("api/signup-valid", auth.signup_valid, name="signup_valid"),

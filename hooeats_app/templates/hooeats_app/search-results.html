@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Search Results</h1>
+  
+  <p>Results for keyword: "{{ keyword }}"</p>
+  
+  <ul>
+    {% for item in uva_dining_items %}
+      <li>
+        <h2>{{ item.title }}</h2>
+        <p><strong>Description:</strong> {{ item.description }}</p>
+        <p><strong>Calories:</strong> {{ item.calories }}</p>
+        <p><strong>Dining Hall:</strong> {{ item.dining_hall }}</p>
+        
+        {% if user.is_authenticated %}
+          {% if item.is_bookmarked %}
+            <a href="{% url 'remove_bookmark' item.meal_id %}">Remove bookmark</a>
+          {% else %}
+            <a href="{% url 'add_bookmark' item.meal_id %}">Add bookmark</a>
+          {% endif %}
+        {% endif %}
+      </li>
+    {% empty %}
+      <p>No results found.</p>
+    {% endfor %}
+  </ul>
+{% endblock %}
