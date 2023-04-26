@@ -43,6 +43,10 @@
             </button>
             <ul class="dropdown-menu" style="right: 0; left: auto">
                 <li>
+                    <a class="dropdown-item" href="{% url 'dashboard' %}">
+                        <i class="bi bi-house me-2"></i>
+                        Dashboard
+                    </a>
                     <a class="dropdown-item" href="{% url 'signout' %}">
                         <i class="bi bi-box-arrow-in-left me-2"></i>
                         Sign Out
@@ -67,6 +71,12 @@
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group w-100 list-group-flush mt-2">
+                {% if "user" in request.COOKIES %}
+                    <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-house me-2"></i>
+                        Dashboard
+                    </a>
+                {% endif %}
                 {% if "user" in request.COOKIES %}
                     <a href="{% url 'meal_planner' %}" class="list-group-item list-group-item-action">
                         <i class="bi bi-calendar-date me-2"></i>

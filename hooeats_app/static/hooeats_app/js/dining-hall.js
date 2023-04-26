@@ -63,10 +63,7 @@ const addNutritionalInfo = (title, diningHall, section) => {
             modalElements["description"].innerText = nutritionData.description;
         }
         for (const key in modalElements) {
-            if (key === "description") {
-                continue;
-            }
-            else if (["cholesterol", "sodium"].includes(key)) {
+            if (["cholesterol", "sodium"].includes(key)) {
                 modalElements[key].innerText = `${nutritionData[key]} mg`;
             }
             else if (key === "calories") {

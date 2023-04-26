@@ -1,7 +1,7 @@
 from django.shortcuts import redirect
 from django.urls import path
 from .views import views
-from .views import auth, dining_halls, meal_planner
+from .views import auth, dining_halls, meal_planner, dashboard, recipes
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -20,6 +20,7 @@ urlpatterns = [
     path("create-meal-plan/", meal_planner.create_meal_plan, name="create_meal_plan"),
     path("update-meal-plan/", meal_planner.update_meal_plan, name="update_meal_plan"),
     path("delete-meal-plan", meal_planner.delete_meal_plan, name="delete_meal_plan"),
+    path("dashboard/", dashboard.dashboard, name="dashboard"),
     path("api/signup-valid/", auth.signup_valid, name="signup_valid"),
     path("api/dining-hall/<str:title>/<str:dining_hall>/<str:section>/", dining_halls.fetch_nutritional_data, name="meal_nutrition"),
     path("api/dining-hall/insert-bookmark/", dining_halls.insert_bookmark, name="insert_bookmark"),
@@ -29,5 +30,6 @@ urlpatterns = [
     path("api/meal-planner/delete-uva-meal/", meal_planner.delete_uva_meal, name="delete_uva_meal"),
     path("api/meal-planner/insert-recipe/", meal_planner.insert_recipe, name="insert_recipe"),
     path("api/meal-planner/update-recipe/", meal_planner.update_recipe, name="update_recipe"),
-    path("api/meal-planner/delete-recipe/", meal_planner.delete_recipe, name="delete_recipe")
+    path("api/meal-planner/delete-recipe/", meal_planner.delete_recipe, name="delete_recipe"),
+    path("api/recipes/remove-bookmark/", recipes.remove_bookmark, name="recipe_remove_bookmark")
 ]

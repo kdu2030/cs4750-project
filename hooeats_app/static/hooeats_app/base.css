@@ -100,3 +100,15 @@ html,body
 .accordion-header .accordion-button:not(.collapsed)::after{
     background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%231fa813'><path%20fill-rule='evenodd'%20d='M1.646%204.646a.5.5%200%200%201%20.708%200L8%2010.293l5.646-5.647a.5.5%200%200%201%20.708.708l-6%206a.5.5%200%200%201-.708%200l-6-6a.5.5%200%200%201%200-.708z'/></svg>");
 }
+
+.mh-95vh{
+    min-height: 95vh;
+}
+
+.mh-200px{
+    min-height: 200px;
+}
+
+.mh-250px{
+    min-height: 250px;
+}

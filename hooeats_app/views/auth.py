@@ -33,7 +33,7 @@ def handle_signin(request: HttpRequest) -> HttpResponse:
         if signin_results[0]["password"] != password_hash:
            return redirect(reverse("signin_error", args=["Your password is incorrect"]))
         user_dict = {"username": username, "email": signin_results[0]["email"], "profile_img": signin_results[0]["profile_img"]}
-        response = redirect(reverse("index"))
+        response = redirect(reverse("dashboard"))
         response.set_cookie("user", json.dumps(user_dict))
         return response
     except Exception:
