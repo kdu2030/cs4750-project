@@ -115,7 +115,7 @@ def get_meal_plan(username: str, plan_id:int = -1) -> Dict:
         
         context["range"] = list(range(0, 7))
 
-        # Get Dates For Headers
+        # Get Dates For Meal Plan Headers
         week_dates = get_week_dates(context["selected_meal_plan_data"]["week_start"],"%m/%d/%Y")
         context["week_dates"] = []
         for week_date in week_dates:
