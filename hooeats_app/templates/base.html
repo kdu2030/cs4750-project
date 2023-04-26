@@ -67,16 +67,22 @@
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group w-100 list-group-flush mt-2">
+                {% if "user" in request.COOKIES %}
+                    <a href="{% url 'meal_planner' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-calendar me-2"></i>
+                        Meal Planner
+                    </a>
+                {% endif %}
                 <a href="{% url 'dining_hall' 'Observatory Hill'%}" class="list-group-item list-group-item-action">
-                    <i class="bi bi-cup-straw"></i>
+                    <i class="bi bi-cup-straw me-2"></i>
                     Observatory Hill
                 </a>
                 <a href="{% url 'dining_hall' 'Fresh Food Company'%}" class="list-group-item list-group-item-action">
-                    <i class="bi bi-cup-straw"></i>
+                    <i class="bi bi-cup-straw me-2"></i>
                     Fresh Food Company
                 </a>
                 <a href="{% url 'dining_hall' 'Runk'%}" class="list-group-item list-group-item-action">
-                    <i class="bi bi-cup-straw"></i>
+                    <i class="bi bi-cup-straw me-2"></i>
                     Runk
                 </a>
                 {% if "user" not in request.COOKIES %}
