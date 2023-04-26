@@ -6,7 +6,7 @@ from typing import Dict, List
 from django.urls import reverse
 from hooeats_app.db_utils.database import HooEatsDatabase
 from datetime import datetime, timedelta
-from hooeats_app.date_utils.week_dates import get_week_start
+from hooeats_app.date_utils.week_dates import get_week_start, get_week_dates
 from traceback import print_exc
 import copy
 
@@ -114,6 +114,13 @@ def get_meal_plan(username: str, plan_id:int = -1) -> Dict:
             "%m/%d/%Y")
         
         context["range"] = list(range(0, 7))
+
+        # Get Dates For Headers
+        week_dates = get_week_dates(context["selected_meal_plan_data"]["week_start"],"%m/%d/%Y")
+        context["week_dates"] = []
+        for week_date in week_dates:
+            context["week_dates"].append(week_date)
+
         return context
     except:
         print_exc()
