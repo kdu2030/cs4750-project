@@ -5,41 +5,75 @@ from typing import Dict, List
 from datetime import datetime, timedelta
 import json
 
-def get_search_results(request: HttpRequest, keyword: str) -> JsonResponse:
-    recipe_query = "SELECT * FROM recipe JOIN recipe_tags JOIN recipe_ingredients '\
-    WHERE recipe_name LIKE ? OR steps LIKE ? OR ingredient LIKE ? OR tag LIKE ? '\
-    UNION  '\
-    SELECT * FROM uva_meals JOIN uva_descriptions '\
-    WHERE title LIKE ? OR station LIKE ? OR description LIKE ? OR dining_hall LIKE ?"
-    try:
-        database = HooEatsDatabase(secure=True)
-        recipe_search_result_data = database.execute_secure(True, recipe_query, keyword, keyword, keyword, keyword)
-        dining_hall_search_result_data = database.execute_secure(True, recipe_query, keyword, keyword, keyword, keyword)
-        return JsonResponse([recipe_search_result_data, dining_hall_search_result_data])
-    except:
-        error = {"result": "Database Error"}
-        return JsonResponse(error)
-
 def get_search_results(keyword: str, username: str = ""):
-    #recipe_search_query = "SELECT * FROM recipe JOIN recipe_tags JOIN recipe_ingredients '\
-    #WHERE recipe_name LIKE ? OR steps LIKE ? OR ingredient LIKE ? OR tag LIKE ? '\
-    
-    uva_dining_search_query = "SELECT * FROM uva_meals JOIN uva_descriptions WHERE uva_meals.title LIKE ? OR uva_meals.section LIKE ? OR uva_descriptions.description LIKE ? OR uva_meals.dining_hall LIKE ?"
+    query_keyword = "%" + keyword + "%"
+    uva_dining_search_query = "SELECT * FROM uva_meals NATURAL JOIN uva_descriptions WHERE uva_meals.title LIKE ? OR uva_meals.section LIKE ? OR uva_descriptions.description LIKE ? OR uva_meals.dining_hall LIKE ? LIMIT 10;"
+    recipe_search_query = "SELECT * FROM recipes NATURAL JOIN recipe_instructions NATURAL JOIN recipe_images WHERE recipes.recipe_name LIKE ? OR recipe_instructions.steps LIKE ? LIMIT 10;"
+    recipe_tag_search_query = "SELECT DISTINCT recipe_id FROM recipe_tags WHERE tag LIKE ?;"
+    recipe_ingredients_search_query = "SELECT DISTINCT recipe_id FROM recipe_ingredients WHERE ingredient LIKE ?;"
 
     database = HooEatsDatabase(secure=True)
-    uva_dining_search_results = database.execute_secure(True, uva_dining_search_query, keyword, keyword, keyword, keyword)
-    #recipe_search_results = database.execute_secure(True, recipe_search_query, keyword)
+    uva_dining_search_results = database.execute_secure(True, uva_dining_search_query, query_keyword, query_keyword, query_keyword, query_keyword)
+    recipe_search_results = database.execute_secure(True, recipe_search_query, query_keyword, query_keyword)
+    recipe_tag_search_results = database.execute_secure(True, recipe_tag_search_query, query_keyword)
+    recipe_ingredients_search_results = database.execute_secure(True, recipe_ingredients_search_query, query_keyword)
 
     uva_dining_items = []
+    recipe_items = []
+    recipes_from_recipe_tag_search_list = []
+    recipes_from_recipe_ingredients_search_list = []
 
-#i need uva_descriptions.description, uva_descriptions.calories, uva_meals.title, uva_meals.meal_id
     for row in uva_dining_search_results:
-         #fix query
-         #? may not be working properly??
-         uva_dining_item_query = "SELECT uva_meals.meal_id, uva_meals.title, uva_descriptions.description, uva_descriptions.calories FROM uva_meals NATURAL JOIN uva_descriptions WHERE uva_meals.title = ? OR uva_descriptions.title = ?"
-         items = database.execute_secure(True, uva_dining_item_query, row["title"], row["title"])
-         uva_dining_items.extend(items)
-    
+        uva_dining_items.append(row)
+    for row in recipe_search_results:
+        recipe_items.append(row)
+
+    #Getting all the info for recipes based on recipe tag search
+    for r_id in recipe_tag_search_results:
+        r_query = "SELECT * FROM recipes NATURAL JOIN recipe_instructions WHERE recipe_id = ?;"
+        recipe_tag_results = database.execute_secure(True, r_query, r_id['recipe_id'])
+        for i in recipe_tag_results:
+            recipes_from_recipe_tag_search_list.append(i)
+    #If the recipe_id does not exist in the search by recipe name and instruction, then add it to the overall recipe_items list of dictionaries
+    for i in recipes_from_recipe_tag_search_list:
+        key_check = "recipe_id"
+        value_check = i["recipe_id"]
+        value_exists = any(r[key_check] == value_check for r in recipe_items)
+        if not value_exists:
+            recipe_items.append(i)
+
+    #Adding all the tags to the recipe items
+    for recipe in recipe_items:
+        recipe_tag_query = "SELECT tag FROM recipe_tags WHERE recipe_id = ?;"
+        tags = database.execute_secure(True, recipe_tag_query, recipe["recipe_id"])
+        recipe["tags"] = []
+        for tag in tags:
+            recipe["tags"].append(tag['tag'])
+
+
+#Getting all the info for recipes based on recipe ingredients search
+    for r_id in recipe_ingredients_search_results:
+        r_query = "SELECT * FROM recipes NATURAL JOIN recipe_instructions WHERE recipe_id = ?;"
+        recipe_ingredients_results = database.execute_secure(True, r_query, r_id['recipe_id'])
+        for i in recipe_ingredients_results:
+            recipes_from_recipe_ingredients_search_list.append(i)
+    #If the recipe_id does not exist in the search by recipe name and instruction, then add it to the overall recipe_items list of dictionaries
+    for i in recipes_from_recipe_ingredients_search_list:
+        key_check = "recipe_id"
+        value_check = i["recipe_id"]
+        value_exists = any(r[key_check] == value_check for r in recipe_items)
+        if not value_exists:
+            recipe_items.append(i)
+
+    #Adding all the tags to the recipe items
+    for recipe in recipe_items:
+        recipe_ingredients_query = "SELECT ingredient FROM recipe_ingredients WHERE recipe_id = ?;"
+        ingredients = database.execute_secure(True, recipe_ingredients_query, recipe["recipe_id"])
+        recipe["ingredients"] = []
+        for ingredient in ingredients:
+            recipe["ingredients"].append(ingredient['ingredient'])
+
+
 
     if len(username) > 0:
         # Find the meals that the user bookmarked
@@ -51,11 +85,18 @@ def get_search_results(keyword: str, username: str = ""):
                 menu_item["is_bookmarked"] = True
             else:
                  menu_item["is_bookmarked"] = False
+        #for recipe_item in recipe_items:
+         #   if recipe_item["recipe_id"] in bookmarked_meals:
+          #      recipe_item["is_bookmarked"] = True
+           # else:
+            #     recipe_item["is_bookmarked"] = False
 
     database.close()
 
     context = {
+        #"uva_dining_items" : uva_dining_search_results
         "uva_dining_items": uva_dining_items,
+        "recipe_items": recipe_items,
     }
     return context
 
@@ -66,7 +107,7 @@ def search_results_view(request: HttpRequest) -> HttpRequest:
         results = get_search_results(keyword, username=user)
     else:
         results = get_search_results(keyword)
-    context = {'results': results, 'keyword' : keyword}
+    context = {'keyword' : keyword, **results}
     return render(request, 'hooeats_app/search-results.html', context)
 
 def get_bookmarked_meals(database: HooEatsDatabase, username: str) -> List[Dict]:

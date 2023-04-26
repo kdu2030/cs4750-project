@@ -4,8 +4,8 @@
   <h1>Search Results</h1>
   
   <p>Results for keyword: "{{ keyword }}"</p>
-  
   <ul>
+    <p><strong>UVA Dining Hall</strong></p>
     {% for item in uva_dining_items %}
       <li>
         <h2>{{ item.title }}</h2>
@@ -21,8 +21,24 @@
           {% endif %}
         {% endif %}
       </li>
-    {% empty %}
-      <p>No results found.</p>
+    {% endfor %}
+  </ul>
+  <ul>
+    <p><strong>Recipes</strong></p>
+    {% for item in recipe_items %}
+      <li>
+        <h2>{{ item.recipe_name }}</h2>
+        <p><strong>Calories:</strong> {{ item.calories }}</p>
+        <p><strong>Image url:</strong> <img src=item.img_url alt="recipe picture"></p>
+        
+        {% if user.is_authenticated %}
+          {% if item.is_bookmarked %}
+            <a href="{% url 'remove_bookmark' item.meal_id %}">Remove bookmark</a>
+          {% else %}
+            <a href="{% url 'add_bookmark' item.meal_id %}">Add bookmark</a>
+          {% endif %}
+        {% endif %}
+      </li>
     {% endfor %}
   </ul>
 {% endblock %}
