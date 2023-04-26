@@ -29,3 +29,8 @@
     z-index: 1020;
     align-self: flex-start;
 }
+
+.bookmark-content{
+    height: 300px;
+    overflow: scroll;
+}

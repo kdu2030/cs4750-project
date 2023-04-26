@@ -16,6 +16,13 @@
 </head>
 <body>
 
+    {% if error %}
+        <script src="{% static 'hooeats_app/js/add-error-toast.js' %}"></script>
+        <script>
+            window.addEventListener("load", () => addErrorToast("<i class='bi bi-x-circle-fill me-3'></i> {{ error }}", "We encountered an error. Please try again.", false));
+        </script>
+    {% endif %}
+
     <nav class="navbar navbar-expand-lg d-flex justify-content-between align-items-center">
         <div class="logo-menu d-flex flex-row ms-3">
             <button type="button" class="menu-button btn border-end border-2" data-bs-toggle="offcanvas" href="#nav-menu">

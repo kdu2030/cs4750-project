@@ -13,12 +13,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.6.6/dragula.min.js" integrity="sha512-MrA7WH8h42LMq8GWxQGmWjrtalBjrfIzCQ+i2EZA26cZ7OBiBd/Uct5S3NP9IBqKx5b+MMNH1PhzTsk6J9nPQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{% static 'hooeats_app/js/meal-planner.js' %}"></script>
 
-    {% if error %}
-        <script>
-            window.addEventListener("load", () => addToast("<i class='bi bi-x-circle-fill me-3'></i> {{ error }}", "We encountered an error. Please try again.", false));
-        </script>
-    {% endif %}
-
     <div id="meal-planner-data" class="d-none">
         {% csrf_token %}
         <div id="meal-plan-data">
@@ -45,7 +39,7 @@
                                 </button>
                             </h2>
                             <div id="bookmarked-meals" class="accordion-collapse collapse show" data-bs-parent="#meal-accordion">
-                                <div class="accordion-body">
+                                <div class="accordion-body bookmark-content">
                                     {% if selected_meal_plan|length == 0 %}
                                         <p>A meal plan must be selected to view bookmarked meals.<p>
                                     {% elif bookmarked_meals|length == 0 %}
@@ -83,7 +77,7 @@
                                 </button>
                             </h2>
                             <div id="bookmarked-recipes" class="accordion-collapse collapse show" data-bs-parent="#recipe-accordion">
-                                <div class="accordion-body">
+                                <div class="accordion-body bookmark-content">
                                     {% if bookmarked_recipes|length == 0%}
                                         <p>You haven't bookmarked any recipes.</p>
                                     {% else %}
