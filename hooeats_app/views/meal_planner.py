@@ -167,10 +167,18 @@ def update_meal_plan(request: HttpRequest) -> HttpResponse:
     return redirect(reverse("specific_meal_plan", kwargs={"plan_id", plan_id}))
 
 def delete_meal_plan(request: HttpRequest) -> HttpResponse:
+    if request.COOKIES.get("user") is None:
+        return redirect(reverse("signin"))
+    username = json.loads(request.COOKIES.get("user"))["username"]
     plan_id = request.POST.get("plan_id")
+    check_owner_query = "SELECT username FROM meal_plan;"
     delete_meal_plan_query = "DELETE FROM meal_plan WHERE plan_id=?;"
     database = HooEatsDatabase(secure=True)
-    database.execute_secure(True, delete_meal_plan_query, plan_id)
+    meal_plan_owner = database.execute_secure(True, check_owner_query, username)[0]["username"]
+    if meal_plan_owner == username:
+        database.execute_secure(False, delete_meal_plan_query, plan_id)
+    else:
+        return redirect(reverse("signin"))
     database.close()
     return redirect(reverse("meal_planner"))
 
