@@ -13,6 +13,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.6.6/dragula.min.js" integrity="sha512-MrA7WH8h42LMq8GWxQGmWjrtalBjrfIzCQ+i2EZA26cZ7OBiBd/Uct5S3NP9IBqKx5b+MMNH1PhzTsk6J9nPQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{% static 'hooeats_app/js/meal-planner.js' %}"></script>
 
+    {% if error %}
+        <script>
+            window.addEventListener("load", () => addToast("<i class='bi bi-x-circle-fill me-3'></i> {{ error }}", "We encountered an error. Please try again.", false));
+        </script>
+    {% endif %}
+
     <div id="meal-planner-data" class="d-none">
         {% csrf_token %}
         <div id="meal-plan-data">
@@ -20,6 +26,9 @@
         </div>
         <div id="bookmarked-meals-data">
             {% to_json all_uva_meals_data %}
+        </div>
+        <div id="all-recipes-data">
+            {% to_json all_recipes_data %}
         </div>
     </div>
 
@@ -75,7 +84,20 @@
                             </h2>
                             <div id="bookmarked-recipes" class="accordion-collapse collapse show" data-bs-parent="#recipe-accordion">
                                 <div class="accordion-body">
-                                    <p>Bookmarked Recipes</p>
+                                    {% if bookmarked_recipes|length == 0%}
+                                        <p>You haven't bookmarked any recipes.</p>
+                                    {% else %}
+                                        {%for recipe in bookmarked_recipes %}
+                                            <div class="recipe-card">
+                                                <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }}>
+                                                    <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" />
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -97,10 +119,12 @@
                                 <li class="dropdown-item">No meal plans found</li>
                             {% endif %}
                             {% for meal_plan in meal_plans %}
-                                <li class="dropdown-item d-flex flex-row">
-                                    <p class="me-3 my-0">{{ meal_plan.plan_name }}</p>
-                                    <p class="text-secondary my-0">{{ meal_plan.week_start }}</p>
-                                </li>
+                                    <li>
+                                        <a class="dropdown-item d-flex flex-row" href="{% url 'specific_meal_plan' meal_plan.plan_id %}">
+                                            <p class="me-3 my-0">{{ meal_plan.plan_name }}</p>
+                                            <p class="text-secondary my-0">{{ meal_plan.week_start }}</p>
+                                        </a>
+                                    </li>
                             {% endfor %}
                         </ul>
                         <button class="btn btn-outline-success me-3" data-bs-toggle="modal" data-bs-target="#create-meal-plan">
@@ -141,572 +165,152 @@
                                 <tbody>
                                     <tr class="row-min-h">
                                         <td><strong>Breakfast</strong></td>
-                                        <td class="meal-plan-cell" data-date=1 data-meal-type="Breakfast">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 0 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
+
+                                        {% for i in range %}
+                                            <td class="meal-plan-cell" data-date="{% inc_day_of_week i %}" data-meal-type="Breakfast">
+                                                {% for meal in uva_meals_in_plan %}
+                                                    {% if meal.week_offset == i and meal.plan_meal_type == 'Breakfast' %}
+                                                        <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
+                                                            <div class="card-header">
+                                                                {{ meal.dining_hall }}
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ meal.title }}</h5>
+                                                                <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
+                                                                <p class="card-text">{{ meal.description }}</p>
+                                                                <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
+                                                                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                                    View
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% for recipe in recipes_in_plan %}
+                                                    {% if recipe.week_offset == i and recipe.plan_meal_type == 'Breakfast' %}
+                                                        <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }} data-plan-item-id= {{ recipe.item_id }}>
+                                                            <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" />
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                {% endif%}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=2 data-meal-type="Breakfast">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 1 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=3 data-meal-type="Breakfast">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 2 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=4 data-meal-type="Breakfast">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 3 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=5 data-meal-type="Breakfast">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 4 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        <td class="meal-plan-cell" data-date=6 data-meal-type="Breakfast">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 5 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=0 data-meal-type="Breakfast">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 6 and meal.plan_meal_type == 'Breakfast' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            </td>
+                                        {% endfor %}
                                     </tr>
                                     <tr class="row-min-h">
                                         <td><strong>Lunch</strong></td>
-                                        <td class="meal-plan-cell" data-date=1 data-meal-type="Lunch">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 0 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
+                                        {% for i in range %}
+                                            <td class="meal-plan-cell" data-date="{% inc_day_of_week i %}" data-meal-type="Lunch">
+                                                {% for meal in uva_meals_in_plan %}
+                                                    {% if meal.week_offset == i and meal.plan_meal_type == 'Lunch' %}
+                                                        <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
+                                                            <div class="card-header">
+                                                                {{ meal.dining_hall }}
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ meal.title }}</h5>
+                                                                <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
+                                                                <p class="card-text">{{ meal.description }}</p>
+                                                                <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
+                                                                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                                    View
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% for recipe in recipes_in_plan %}
+                                                    {% if recipe.week_offset == i and recipe.plan_meal_type == 'Lunch' %}
+                                                        <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }} data-plan-item-id= {{ recipe.item_id }}>
+                                                            <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" />
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                {% endif%}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=2 data-meal-type="Lunch">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 1 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=3 data-meal-type="Lunch">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 2 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=4 data-meal-type="Lunch">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 3 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=5 data-meal-type="Lunch">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 4 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        <td class="meal-plan-cell" data-date=6 data-meal-type="Lunch">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 5 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=0 data-meal-type="Lunch">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 6 and meal.plan_meal_type == 'Lunch' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            </td>
+                                        {% endfor %}
                                     </tr>
                                     <tr class="row-min-h">
                                         <td><strong>Dinner</strong></td>
-                                        <td class="meal-plan-cell" data-date=1 data-meal-type="Dinner">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 0 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
+                                        {% for i in range %}
+                                            <td class="meal-plan-cell" data-date="{% inc_day_of_week i %}" data-meal-type="Dinner">
+                                                {% for meal in uva_meals_in_plan %}
+                                                    {% if meal.week_offset == i and meal.plan_meal_type == 'Dinner' %}
+                                                        <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
+                                                            <div class="card-header">
+                                                                {{ meal.dining_hall }}
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ meal.title }}</h5>
+                                                                <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
+                                                                <p class="card-text">{{ meal.description }}</p>
+                                                                <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
+                                                                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                                    View
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% for recipe in recipes_in_plan %}
+                                                    {% if recipe.week_offset == i and recipe.plan_meal_type == 'Dinner' %}
+                                                        <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }}>
+                                                            <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" data-plan-item-id= {{ recipe.item_id }} />
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                {% endif%}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=2 data-meal-type="Dinner">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 1 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=3 data-meal-type="Dinner">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 2 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=4 data-meal-type="Dinner">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 3 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=5 data-meal-type="Dinner">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 4 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        <td class="meal-plan-cell" data-date=6 data-meal-type="Dinner">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 5 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=0 data-meal-type="Dinner">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 6 and meal.plan_meal_type == 'Dinner' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            </td>
+                                        {% endfor %}
                                     </tr>
                                     <tr class="row-min-h">
                                         <td><strong>Snacks</strong></td>
-                                        <td class="meal-plan-cell" data-date=1 data-meal-type="Snacks">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 0 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
+                                        {% for i in range %}
+                                            <td class="meal-plan-cell" data-date="{% inc_day_of_week i %}" data-meal-type="Snacks">
+                                                {% for meal in uva_meals_in_plan %}
+                                                    {% if meal.week_offset == i and meal.plan_meal_type == 'Snacks' %}
+                                                        <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
+                                                            <div class="card-header">
+                                                                {{ meal.dining_hall }}
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ meal.title }}</h5>
+                                                                <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
+                                                                <p class="card-text">{{ meal.description }}</p>
+                                                                <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
+                                                                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                                    View
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% for recipe in recipes_in_plan %}
+                                                    {% if recipe.week_offset == i and recipe.plan_meal_type == 'Snacks' %}
+                                                        <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }} data-plan-item-id= {{ recipe.item_id }}>
+                                                            <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image"/>
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                {% endif%}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=2 data-meal-type="Snacks">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 1 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=3 data-meal-type="Snacks">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 2 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=4 data-meal-type="Snacks">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 3 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=5 data-meal-type="Snacks">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 4 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        <td class="meal-plan-cell" data-date=6 data-meal-type="Snacks">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 5 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="meal-plan-cell" data-date=0 data-meal-type="Snacks">
-                                            {% for meal in uva_meals_in_plan %}
-                                                {% if meal.week_offset == 6 and meal.plan_meal_type == 'Snacks' %}
-                                                    <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
-                                                        <div class="card-header">
-                                                            {{ meal.dining_hall }}
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{ meal.title }}</h5>
-                                                            <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
-                                                            <p class="card-text">{{ meal.description }}</p>
-                                                            <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
-                                                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                                                View
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            </td>
+                                        {% endfor %}
                                     </tr>
                                 </tbody>
                             </table>

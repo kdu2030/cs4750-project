@@ -15,6 +15,7 @@ urlpatterns = [
     path("dining-hall/<str:dining_hall>/<str:date_str>/<str:meal_type>/", dining_halls.dining_hall_meal, name="dining_hall_meal"),
     path("handle-signin/", auth.handle_signin, name="handle_signin"),
     path("handle-signup/", auth.handle_signup, name="handle_signup"),
+    path("meal-planner/<int:plan_id>/", meal_planner.meal_plan_specific, name="specific_meal_plan"),
     path("meal-planner/", meal_planner.meal_planner, name="meal_planner"),
     path("create-meal-plan/", meal_planner.create_meal_plan, name="create_meal_plan"),
     path("update-meal-plan/", meal_planner.update_meal_plan, name="update_meal_plan"),
@@ -25,5 +26,8 @@ urlpatterns = [
     path("api/dining-hall/remove-bookmark/", dining_halls.remove_bookmark, name="remove_bookmark"),
     path("api/meal-planner/insert-uva-meal/", meal_planner.insert_uva_meal, name="insert_uva_meal"),
     path("api/meal-planner/update-uva-meal/", meal_planner.update_uva_meal, name="update_uva_meal"),
-    path("api/meal-planner/delete-uva-meal/", meal_planner.delete_uva_meal, name="delete_uva_meal")
+    path("api/meal-planner/delete-uva-meal/", meal_planner.delete_uva_meal, name="delete_uva_meal"),
+    path("api/meal-planner/insert-recipe/", meal_planner.insert_recipe, name="insert_recipe"),
+    path("api/meal-planner/update-recipe/", meal_planner.update_recipe, name="update_recipe"),
+    path("api/meal-planner/delete-recipe/", meal_planner.delete_recipe, name="delete_recipe")
 ]
