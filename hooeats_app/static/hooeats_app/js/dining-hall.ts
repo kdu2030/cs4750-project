@@ -66,7 +66,8 @@ const addToast = (header: string, message: string, successful: boolean) => {
 }
 
 const addNutritionalInfo = (title: string, diningHall: string, section: string) => {
-    fetch(`/api/dining-hall/${title}/${diningHall}/${section}`)
+    const url = "/api/dining-hall/" + encodeURIComponent(title) + "/" + encodeURIComponent(diningHall) + "/" + encodeURIComponent(section);
+    fetch(url)
     .then(response => response.json())
     .then((apiResponse: NutritionAPIResponse) => {
         // If we get an error from the API
@@ -100,10 +101,7 @@ const addNutritionalInfo = (title: string, diningHall: string, section: string) 
         }
 
         for(const key in modalElements){
-            if(key === "description"){
-                continue
-            }
-            else if(["cholesterol", "sodium"].includes(key)){
+            if(["cholesterol", "sodium"].includes(key)){
                 modalElements[key].innerText = `${nutritionData[key]} mg`
             }
             else if(key === "calories"){

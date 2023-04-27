@@ -32,7 +32,8 @@ const addToast = (header, message, successful) => {
     setTimeout(() => { toastContainer.removeChild(toast); }, 5000);
 };
 const addNutritionalInfo = (title, diningHall, section) => {
-    fetch(`/api/dining-hall/${title}/${diningHall}/${section}`)
+    const url = "/api/dining-hall/" + encodeURIComponent(title) + "/" + encodeURIComponent(diningHall) + "/" + encodeURIComponent(section);
+    fetch(url)
         .then(response => response.json())
         .then((apiResponse) => {
         // If we get an error from the API
@@ -62,10 +63,7 @@ const addNutritionalInfo = (title, diningHall, section) => {
             modalElements["description"].innerText = nutritionData.description;
         }
         for (const key in modalElements) {
-            if (key === "description") {
-                continue;
-            }
-            else if (["cholesterol", "sodium"].includes(key)) {
+            if (["cholesterol", "sodium"].includes(key)) {
                 modalElements[key].innerText = `${nutritionData[key]} mg`;
             }
             else if (key === "calories") {

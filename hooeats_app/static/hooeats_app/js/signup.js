@@ -62,7 +62,7 @@ const checkUnique = () => __awaiter(this, void 0, void 0, function* () {
         "email": emailField.value,
         "username": usernameField.value
     };
-    const response = yield postToApi("/api/signup-valid", userData);
+    const response = yield postToApi("/api/signup-valid/", userData);
     switch (response["result"]) {
         case "Signup Valid":
             emailField.setCustomValidity("");

@@ -11,9 +11,11 @@
 <div class="d-flex flex-column justify-content-center align-items-center h-100">
     <h2 class="text-success">Sign In</h2>
     <p class="display-inline">Don't have an account yet? <a class="text-success" href="{% url 'signup' %}">Sign Up</a></p>
-    {% if error %}
-        <p class="text-danger">{{ error }}</p>
+
+    {% if signin_error%}
+        <p class="text-danger">{{ signin_error }}</p>
     {% endif %}
+
     <form class="w-50" id="signup-form" method="POST" action="{% url 'handle_signin' %}">
         {% csrf_token %}
         <label for="username" class="form-label">Username<span class="text-danger">*</span></label>
