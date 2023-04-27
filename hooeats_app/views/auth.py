@@ -15,6 +15,8 @@ def signup_error(request: HttpRequest, error: str) -> HttpResponse:
     return render(request, "hooeats_app/signup.html", {"error": error})
 
 def signin_error(request: HttpRequest, error: str) -> HttpResponse:
+    if error == "Your password is incorrect" or error ==  "User does not exist.":
+        return render(request, "hooeats_app/signin.html", {"signin_error": error})
     return render(request, "hooeats_app/signin.html", {"error": error})
 
 def signin(request: HttpRequest) -> HttpResponse:

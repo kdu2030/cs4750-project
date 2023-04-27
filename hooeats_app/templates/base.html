@@ -19,7 +19,7 @@
     {% if error %}
         <script src="{% static 'hooeats_app/js/add-error-toast.js' %}"></script>
         <script>
-            window.addEventListener("load", () => addErrorToast("<i class='bi bi-x-circle-fill me-3'></i> {{ error }}", "We encountered an error. Please try again.", false));
+            window.addEventListener("load", () => addErrorToast("<i class='bi bi-x-circle-fill me-3'></i> We encountered an error.", "{{ error }}", false));
         </script>
     {% endif %}
 
