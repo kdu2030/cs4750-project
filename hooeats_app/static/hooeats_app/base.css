@@ -112,3 +112,11 @@ html,body
 .mh-250px{
     min-height: 250px;
 }
+
+.h-80vh{
+    min-height: 80vh;
+}
+
+.w-85vw{
+    width: 85vw;
+}
