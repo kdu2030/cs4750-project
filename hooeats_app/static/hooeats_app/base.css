@@ -79,6 +79,10 @@ html,body
     width: 90vw;
 }
 
+.w-95vw{
+    width: 95vw;
+}
+
 .w-20{
     width: 20%;
 }

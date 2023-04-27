@@ -1,44 +1,112 @@
-var multipleCardCarousel = document.querySelector(
-    "#carouselExampleControls"
-);
-if (window.matchMedia("(min-width: 768px)").matches) {
-    var carousel = new bootstrap.Carousel(multipleCardCarousel, {
-        interval: false,
-    });
-    var carouselWidth = $(".carousel-inner")[0].scrollWidth;
-    var cardWidth = $(".carousel-item").width();
-    var scrollPosition = 0;
-    $("#carouselExampleControls .carousel-control-next").on("click", function () {
-      if (scrollPosition < carouselWidth - cardWidth * 4) {
-        scrollPosition += cardWidth;
-        $("#carouselExampleControls .carousel-inner").animate(
-          { scrollLeft: scrollPosition },
-          600
-        );
-      }
-    });
-    $("#carouselExampleControls .carousel-control-prev").on("click", function () {
-      if (scrollPosition > 0) {
-        scrollPosition -= cardWidth;
-        $("#carouselExampleControls .carousel-inner").animate(
-          { scrollLeft: scrollPosition },
-          600
-        );
-      }
-    });
-} else {
-    $(multipleCardCarousel).addClass("slide");
+// var multipleCardCarousel = document.querySelector(
+//     "#lowCalorieControls"
+// );
+// if (window.matchMedia("(min-width: 768px)").matches) {
+// var carousel = new bootstrap.Carousel(multipleCardCarousel, {
+//     interval: false,
+// });
+// let carouselTest = $(".carousel-inner");
+// var carouselWidth = $(".carousel-inner")[0].scrollWidth;
+// var cardWidth = $(".carousel-item").width();
+// var scrollPosition = 0;
+// $("#lowCalorieControls .carousel-control-next").on("click", function () {
+//     if (scrollPosition < carouselWidth - cardWidth * 4) {
+//         scrollPosition += cardWidth;
+//         $("#lowCalorieControls .carousel-inner").animate(
+//           { scrollLeft: scrollPosition },
+//           600
+//         );
+//     }
+//     });
+//     $("#lowCalorieControls .carousel-control-prev").on("click", function () {
+//       if (scrollPosition > 0) {
+//         scrollPosition -= cardWidth;
+//         $("#lowCalorieControls .carousel-inner").animate(
+//           { scrollLeft: scrollPosition },
+//           600
+//         );
+//     }
+// });
+// } else {
+//     $(multipleCardCarousel).addClass("slide");
+// }
+
+// let carouselWidth = 0;
+// let cardWidth = 0;
+// let scrollPosition = 0;
+const carouselPositions = new Map();
+
+const initializeCarousel = () => {
+    const tags = ['low-calorie','breakfast','lunch','dinner','appetizers','desserts','vegetarian','vegan'];
+    //const tags = ['low-calorie'];
+    // carouselWidth = $(".carousel-inner")[0].scrollWidth;
+    // cardWidth = $(".carousel-item").width();
+    // scrollPosition = 0;
+    tags.forEach((tag) => {
+        const carouselTagData = {
+            carouselWidth: $(`#${tag}-controls .carousel-inner`)[0].scrollWidth,
+            cardWidth: $(`#${tag}-controls .carousel-item`).width(),
+            scrollPosition: 0
+        };
+        carouselPositions.set(tag, carouselTagData);
+    })
+
 }
 
-var multipleCardCarousel = document.querySelector(
-    "#carouselExampleControls"
-);
-if (window.matchMedia("(min-width: 768px)").matches) {
-    var carousel = new bootstrap.Carousel(multipleCardCarousel, {
-      interval: false
-    });
-} else {
-    $(multipleCardCarousel).addClass("slide");
+window.addEventListener("load", initializeCarousel);
+
+const nextButton = (tag) => {
+    // if (scrollPosition < carouselWidth - cardWidth * 4) {
+    //     scrollPosition += cardWidth;
+    //     $("#lowCalorieControls .carousel-inner").animate(
+    //         { scrollLeft: scrollPosition },
+    //         600
+    //     );
+    // }
+    const carouselData = carouselPositions.get(tag);
+    let scrollPosition = carouselData.scrollPosition;
+    let carouselWidth = carouselData.carouselWidth;
+    let cardWidth = carouselData.cardWidth;
+    
+    if (scrollPosition < carouselWidth - cardWidth * 4) {
+        scrollPosition += cardWidth;
+        $(`#${tag}-controls .carousel-inner`).animate(
+            { scrollLeft: scrollPosition },
+            600
+        );
+    }
+
+    const newCarouselData = {
+        scrollPosition,
+        carouselWidth,
+        cardWidth,
+    };
+
+    carouselPositions.set(tag, newCarouselData);
+
+}
+
+const prevButton = (tag) => {
+    const carouselData = carouselPositions.get(tag);
+    let scrollPosition = carouselData.scrollPosition;
+    let carouselWidth = carouselData.carouselWidth;
+    let cardWidth = carouselData.cardWidth;
+
+    if (scrollPosition > 0) {
+        scrollPosition -= cardWidth;
+        $(`#${tag}-controls .carousel-inner`).animate(
+          { scrollLeft: scrollPosition },
+          600
+        );
+    }
+
+    const newCarouselData = {
+        scrollPosition,
+        carouselWidth,
+        cardWidth,
+    };
+
+    carouselPositions.set(tag, newCarouselData);
 }
 
 
@@ -79,50 +147,50 @@ const addNutritionalInfo = (title, diningHall, section) => {
     fetch(`/api/dining-hall/${title}/${diningHall}/${section}`)
         .then(response => response.json())
         .then((apiResponse) => {
-        // If we get an error from the API
-        if ("result" in apiResponse && apiResponse.result === "Database error") {
-            const header = `<i class="bi bi-x-circle-fill me-3"></i> Unable to Connect`;
-            const message = "We were unable to reach our servers. Please try again.";
-            addToast(header, message, false);
-            return;
-        }
-        const modalElements = {
-            title: document.getElementById("meal-title"),
-            description: document.getElementById("meal-description"),
-            serving_size: document.getElementById("serving-size"),
-            calories: document.getElementById("calories"),
-            calories_from_fat: document.getElementById("calories-from-fat"),
-            total_fat: document.getElementById("total-fat"),
-            saturated_fat: document.getElementById("saturated-fat"),
-            cholesterol: document.getElementById("cholesterol"),
-            sodium: document.getElementById("sodium"),
-            total_carbohydrates: document.getElementById("total-carbohydrates"),
-            protein: document.getElementById("protein"),
-            sugar: document.getElementById("sugar"),
-            dietary_fiber: document.getElementById("dietary-fiber"),
-        };
-        const nutritionData = apiResponse;
-        if (nutritionData.description) {
-            modalElements["description"].innerText = nutritionData.description;
-        }
-        for (const key in modalElements) {
-            if (key === "description") {
-                continue;
+            // If we get an error from the API
+            if ("result" in apiResponse && apiResponse.result === "Database error") {
+                const header = `<i class="bi bi-x-circle-fill me-3"></i> Unable to Connect`;
+                const message = "We were unable to reach our servers. Please try again.";
+                addToast(header, message, false);
+                return;
             }
-            else if (["cholesterol", "sodium"].includes(key)) {
-                modalElements[key].innerText = `${nutritionData[key]} mg`;
+            const modalElements = {
+                title: document.getElementById("meal-title"),
+                description: document.getElementById("meal-description"),
+                serving_size: document.getElementById("serving-size"),
+                calories: document.getElementById("calories"),
+                calories_from_fat: document.getElementById("calories-from-fat"),
+                total_fat: document.getElementById("total-fat"),
+                saturated_fat: document.getElementById("saturated-fat"),
+                cholesterol: document.getElementById("cholesterol"),
+                sodium: document.getElementById("sodium"),
+                total_carbohydrates: document.getElementById("total-carbohydrates"),
+                protein: document.getElementById("protein"),
+                sugar: document.getElementById("sugar"),
+                dietary_fiber: document.getElementById("dietary-fiber"),
+            };
+            const nutritionData = apiResponse;
+            if (nutritionData.description) {
+                modalElements["description"].innerText = nutritionData.description;
             }
-            else if (key === "calories") {
-                modalElements[key].innerText = `${nutritionData[key]}`;
+            for (const key in modalElements) {
+                if (key === "description") {
+                    continue;
+                }
+                else if (["cholesterol", "sodium"].includes(key)) {
+                    modalElements[key].innerText = `${nutritionData[key]} mg`;
+                }
+                else if (key === "calories") {
+                    modalElements[key].innerText = `${nutritionData[key]}`;
+                }
+                else if (typeof nutritionData[key] === "number") {
+                    modalElements[key].innerText = `${nutritionData[key]} g`;
+                }
+                else {
+                    modalElements[key].innerText = `${nutritionData[key]}`;
+                }
             }
-            else if (typeof nutritionData[key] === "number") {
-                modalElements[key].innerText = `${nutritionData[key]} g`;
-            }
-            else {
-                modalElements[key].innerText = `${nutritionData[key]}`;
-            }
-        }
-    });
+        });
 };
 const postToDiningHallAPI = (url, data) => __awaiter(this, void 0, void 0, function* () {
     const token = document.getElementsByName("csrfmiddlewaretoken")[0];
@@ -170,18 +238,18 @@ const addBookmark = (mealId, mealTitle) => {
     };
     postToDiningHallAPI("/api/dining-hall/insert-bookmark/", data)
         .then((response) => {
-        if (response.result === "Insertion Successful") {
-            const header = `<i class="bi bi-bookmark-check me-3"></i> Successfully Bookmarked Meal`;
-            const message = `<p>We successfully added ${mealTitle} to your bookmarks.`;
-            addToast(header, message, true);
-            toggleAddRemove(mealId, false);
-        }
-        else {
-            const header = `<i class="bi bi-bookmark-check me-3"></i> Unable to Add Bookmark`;
-            const message = `<p>We were unable to add ${mealTitle} to your bookmarks. Please try again`;
-            addToast(header, message, false);
-        }
-    });
+            if (response.result === "Insertion Successful") {
+                const header = `<i class="bi bi-bookmark-check me-3"></i> Successfully Bookmarked Meal`;
+                const message = `<p>We successfully added ${mealTitle} to your bookmarks.`;
+                addToast(header, message, true);
+                toggleAddRemove(mealId, false);
+            }
+            else {
+                const header = `<i class="bi bi-bookmark-check me-3"></i> Unable to Add Bookmark`;
+                const message = `<p>We were unable to add ${mealTitle} to your bookmarks. Please try again`;
+                addToast(header, message, false);
+            }
+        });
 };
 const removeBookmark = (mealId, mealTitle) => {
     const data = {
@@ -189,16 +257,16 @@ const removeBookmark = (mealId, mealTitle) => {
     };
     postToDiningHallAPI("/api/dining-hall/remove-bookmark/", data)
         .then((response) => {
-        if (response.result === "Deletion Successful") {
-            const header = `<i class="bi bi-bookmark-x me-3"></i> Successfully Removed Bookmark`;
-            const message = `<p>We successfully removed ${mealTitle} from your bookmarks.`;
-            addToast(header, message, true);
-            toggleAddRemove(mealId, true);
-        }
-        else {
-            const header = `<i class="bi bi-bookmark-x me-3"></i> Unable to Remove Bookmark`;
-            const message = `<p>We were unable to remove ${mealTitle} from your bookmarks. Please try again`;
-            addToast(header, message, false);
-        }
-    });
+            if (response.result === "Deletion Successful") {
+                const header = `<i class="bi bi-bookmark-x me-3"></i> Successfully Removed Bookmark`;
+                const message = `<p>We successfully removed ${mealTitle} from your bookmarks.`;
+                addToast(header, message, true);
+                toggleAddRemove(mealId, true);
+            }
+            else {
+                const header = `<i class="bi bi-bookmark-x me-3"></i> Unable to Remove Bookmark`;
+                const message = `<p>We were unable to remove ${mealTitle} from your bookmarks. Please try again`;
+                addToast(header, message, false);
+            }
+        });
 };
