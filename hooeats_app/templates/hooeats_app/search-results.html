@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
   <h1>Search Results</h1>
   
   <p>Results for keyword: "{{ keyword }}"</p>
   <ul>
     <p><strong>UVA Dining Hall</strong></p>
     {% for item in uva_dining_items %}
+
       <li>
         <h2>{{ item.title }}</h2>
         <p><strong>Description:</strong> {{ item.description }}</p>
@@ -25,20 +27,72 @@
   </ul>
   <ul>
     <p><strong>Recipes</strong></p>
-    {% for item in recipe_items %}
-      <li>
-        <h2>{{ item.recipe_name }}</h2>
-        <p><strong>Calories:</strong> {{ item.calories }}</p>
-        <p><strong>Image url:</strong> <img src=item.img_url alt="recipe picture"></p>
-        
-        {% if user.is_authenticated %}
-          {% if item.is_bookmarked %}
-            <a href="{% url 'remove_bookmark' item.meal_id %}">Remove bookmark</a>
-          {% else %}
-            <a href="{% url 'add_bookmark' item.meal_id %}">Add bookmark</a>
-          {% endif %}
-        {% endif %}
-      </li>
-    {% endfor %}
+    <div class="container">
+      <div class="row">
+          {% for item in recipe_items %}
+          <div class="modal fade" id="RecipeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel" style="text-transform: capitalize;">{{item.recipe_name}}</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p><strong>Average Rating:</strong> {{item.average_rating|floatformat:2}}/5</p>
+                  <p><strong>Preparation Time:</strong> {{item.mins}} minutes</p>
+                  <div class="container text-center">
+                    <div class="row">
+                      <div class="col">
+                        col
+                      </div>
+                      <div class="col-2">
+                        <p><strong>Ingredients</strong></p>
+                        {% for ingredient in item.ingredients %}
+                          <p>{{ingredient}}</p>
+                        {% endfor %}
+                      </div>
+                      </div>
+                    <div class="row">
+                      <div class="col">
+                        <p><strong>Calories:</strong> {{item.calories}}g</p>
+                        <p><strong>Total Fat:</strong> {{item.total_fat}}g</p>
+                        <p><strong>Saturated Fat:</strong> {{item.saturated_fat}}g</p>
+                        <p><strong>Sodium:</strong> {{item.sodium}}mg</p>
+                        <p><strong>Total Carbohydrates:</strong> {{item.carbohydrates}}g</p>
+                        <p><strong>Total Sugars:</strong> {{item.sugar}}g</p>
+                        <p><strong>Protein:</strong> {{item.protein}}g</p>
+                      </div>
+                    </div>
+                  </div>
+                  <p><strong>Steps:</strong> {{item.steps}}</p>
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+            <div class="col-md-3">
+              <div class="card h-100 d-flex" style="width: 18rem;">
+                <div class="card-body text-center">
+                  <img src={{item.img_url}} class="card-img-top" alt="...">
+                  <div class="card-body">
+                    <h5 class="card-title" style="text-transform: capitalize;">{{ item.recipe_name }}</h5>
+                    <p class="card-text">Calories: {{item.calories}}</p>
+                    <p class="card-text">Preparation Time: {{item.mins}} minutes</p>
+                    <div class="d-flex justify-content-center align-items-center mt-auto">
+                      <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#RecipeModal">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                        View More
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
   </ul>
 {% endblock %}

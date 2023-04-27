@@ -8,7 +8,7 @@ import json
 def get_search_results(keyword: str, username: str = ""):
     query_keyword = "%" + keyword + "%"
     uva_dining_search_query = "SELECT * FROM uva_meals NATURAL JOIN uva_descriptions WHERE uva_meals.title LIKE ? OR uva_meals.section LIKE ? OR uva_descriptions.description LIKE ? OR uva_meals.dining_hall LIKE ? LIMIT 10;"
-    recipe_search_query = "SELECT * FROM recipes NATURAL JOIN recipe_instructions NATURAL JOIN recipe_images WHERE recipes.recipe_name LIKE ? OR recipe_instructions.steps LIKE ? LIMIT 10;"
+    recipe_search_query = "SELECT * FROM recipes NATURAL JOIN recipe_instructions NATURAL JOIN recipe_images WHERE recipes.recipe_name LIKE ? OR recipe_instructions.steps LIKE ?;"
     recipe_tag_search_query = "SELECT DISTINCT recipe_id FROM recipe_tags WHERE tag LIKE ?;"
     recipe_ingredients_search_query = "SELECT DISTINCT recipe_id FROM recipe_ingredients WHERE ingredient LIKE ?;"
 
@@ -65,7 +65,7 @@ def get_search_results(keyword: str, username: str = ""):
         if not value_exists:
             recipe_items.append(i)
 
-    #Adding all the tags to the recipe items
+    #Adding all the ingredients to the recipe items
     for recipe in recipe_items:
         recipe_ingredients_query = "SELECT ingredient FROM recipe_ingredients WHERE recipe_id = ?;"
         ingredients = database.execute_secure(True, recipe_ingredients_query, recipe["recipe_id"])
