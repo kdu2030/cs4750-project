@@ -272,19 +272,19 @@ const addRecipeNutritionalInfo = (recipe_id) => {
         //}
         for (const key in modalElements) {
             if (["sodium"].includes(key)) {
-                modalElements[key].innerText = `${nutritionData[key]} mg`;
+                modalElements[key].innerText = `${nutritionData[key].toFixed(2)} mg`;
             }
             else if (key === "calories") {
-                modalElements[key].innerText = `${nutritionData[key]}`;
+                modalElements[key].innerText = `${nutritionData[key].toFixed(0)}`;
             }
             else if (key === "mins") {
-                modalElements[key].innerText = `${nutritionData[key]} minutes`;
+                modalElements[key].innerText = `${nutritionData[key].toFixed(2)} minutes`;
             }
             //else if (key === "average_rating") {
               //  modalElements[key].innerText = `${nutritionData[key]}/5`;
             //}
             else if (typeof nutritionData[key] === "number") {
-                modalElements[key].innerText = `${nutritionData[key]} g`;
+                modalElements[key].innerText = `${nutritionData[key].toFixed(2)} g`;
             }
             else {
                 modalElements[key].innerText = `${nutritionData[key]}`;
