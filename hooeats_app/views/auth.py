@@ -15,6 +15,8 @@ def signup_error(request: HttpRequest, error: str) -> HttpResponse:
     return render(request, "hooeats_app/signup.html", {"error": error})
 
 def signin_error(request: HttpRequest, error: str) -> HttpResponse:
+    if error == "Your password is incorrect" or error ==  "User does not exist.":
+        return render(request, "hooeats_app/signin.html", {"signin_error": error})
     return render(request, "hooeats_app/signin.html", {"error": error})
 
 def signin(request: HttpRequest) -> HttpResponse:
@@ -33,7 +35,7 @@ def handle_signin(request: HttpRequest) -> HttpResponse:
         if signin_results[0]["password"] != password_hash:
            return redirect(reverse("signin_error", args=["Your password is incorrect"]))
         user_dict = {"username": username, "email": signin_results[0]["email"], "profile_img": signin_results[0]["profile_img"]}
-        response = redirect(reverse("index"))
+        response = redirect(reverse("dashboard"))
         response.set_cookie("user", json.dumps(user_dict))
         return response
     except Exception:

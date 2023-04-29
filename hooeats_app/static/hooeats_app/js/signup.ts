@@ -57,7 +57,7 @@ const checkUnique = async (): Promise<boolean> => {
         "email": emailField.value,
         "username": usernameField.value
     }
-    const response = await postToApi("/api/signup-valid", userData)
+    const response = await postToApi("/api/signup-valid/", userData)
 
     switch (response["result"]) {
         case "Signup Valid":

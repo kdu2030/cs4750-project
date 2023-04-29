@@ -16,6 +16,13 @@
 </head>
 <body>
 
+    {% if error %}
+        <script src="{% static 'hooeats_app/js/add-error-toast.js' %}"></script>
+        <script>
+            window.addEventListener("load", () => addErrorToast("<i class='bi bi-x-circle-fill me-3'></i> We encountered an error.", "{{ error }}", false));
+        </script>
+    {% endif %}
+
     <nav class="navbar navbar-expand-lg d-flex justify-content-between align-items-center">
         <div class="logo-menu d-flex flex-row ms-3">
             <button type="button" class="menu-button btn border-end border-2" data-bs-toggle="offcanvas" href="#nav-menu">
@@ -23,19 +30,25 @@
             </button>
             <a class="text-decoration-none text-white" href="{%url 'index'%}"><h1 class="fs-3 mt-2 ms-2">Hoo Eats</h1></a>
         </div>
-        <form class="d-flex flex-row">
-            <input type="text" name="search" class="form-control search-bar" placeholder="Search for recipes or dining hall meals" />
-            <button type="submit" class="ms-2 btn btn-success">
-                <i class="bi bi-search"></i>
-            </button>
+        <form action="{% url 'search_results' %}" method="get" class="d-flex flex-row">
+            <input type="text" name="keyword" class = "form-control search-bar" placeholder="Search for recipes or dining hall meals" />
+            <button type="submit" class="ms-2 btn btn-success">Search</button>
         </form>
         {% if "user" in request.COOKIES %}
             <button class="btn d-flex flex-row me-3 align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {% if profile_img %}
+                    <img class="me-2" src="{{ profile_img }}" width="40px" height="40px" />
+                {% else %}
                 <img class="me-2" src="{% get_cookie_value request.COOKIES.user "profile_img" %}" width="40px" height="40px" />
+                {% endif %}
                 <p class="text-white mb-0">{% get_cookie_value request.COOKIES.user "username" %}</p>
             </button>
             <ul class="dropdown-menu" style="right: 0; left: auto">
                 <li>
+                    <a class="dropdown-item" href="{% url 'dashboard' %}">
+                        <i class="bi bi-house me-2"></i>
+                        Dashboard
+                    </a>
                     <a class="dropdown-item" href="{% url 'signout' %}">
                         <i class="bi bi-box-arrow-in-left me-2"></i>
                         Sign Out
@@ -60,22 +73,43 @@
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group w-100 list-group-flush mt-2">
+                {% if "user" in request.COOKIES %}
+                    <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-house me-2"></i>
+                        Dashboard
+                    </a>
+                {% endif %}
+                {% if "user" in request.COOKIES %}
+                    <a href="{% url 'meal_planner' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-calendar-date me-2"></i>
+                        Meal Planner
+                    </a>
+                {% endif %}
                 <a href="{% url 'dining_hall' 'Observatory Hill'%}" class="list-group-item list-group-item-action">
-                    <i class="bi bi-cup-straw"></i>
+                    <i class="bi bi-cup-straw me-2"></i>
                     Observatory Hill
                 </a>
                 <a href="{% url 'dining_hall' 'Fresh Food Company'%}" class="list-group-item list-group-item-action">
-                    <i class="bi bi-cup-straw"></i>
+                    <i class="bi bi-cup-straw me-2"></i>
                     Fresh Food Company
                 </a>
                 <a href="{% url 'dining_hall' 'Runk'%}" class="list-group-item list-group-item-action">
-                    <i class="bi bi-cup-straw"></i>
+                    <i class="bi bi-cup-straw me-2"></i>
                     Runk
                 </a>
+<<<<<<< HEAD
                 <a href="{% url 'recipes' %}" class="list-group-item list-group-item-action">
                     <i class="bi bi-journals"></i>
                     Recipes
                 </a>
+=======
+                {% if "user" in request.COOKIES %}
+                    <a href="{% url 'account_settings' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-gear-wide me-2"></i>
+                        Account Settings
+                    </a>
+                {% endif %}
+>>>>>>> main
                 {% if "user" not in request.COOKIES %}
                    <a href="{% url 'signin' %}" class="list-group-item list-group-item-action">
                      <i class="bi bi-box-arrow-in-right me-2"></i>

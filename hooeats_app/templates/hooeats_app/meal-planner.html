@@ -1,0 +1,557 @@
+{% extends "base.html" %}
+{% load static %}
+{% load parse_json %}
+{% block head_title %} Meal Planner {% endblock %}
+
+{% block head_content %}
+    <link rel="stylesheet" href="{% static 'hooeats_app/meal-planner.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.6.6/dragula.min.css" integrity="sha512-49xW99xceMN8dDoWaoCaXvuVMjnUctHv/jOlZxzFSMJYhqDZmSF/UnM6pLJjQu0YEBLSdO1DP0er6rUdm8/VqA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block content %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.6.6/dragula.min.js" integrity="sha512-MrA7WH8h42LMq8GWxQGmWjrtalBjrfIzCQ+i2EZA26cZ7OBiBd/Uct5S3NP9IBqKx5b+MMNH1PhzTsk6J9nPQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{% static 'hooeats_app/js/meal-planner.js' %}"></script>
+    <script src="{% static 'hooeats_app/js/recipe-dashboard.js' %}"></script>
+
+    <div id="meal-planner-data" class="d-none">
+        {% csrf_token %}
+        <div id="meal-plan-data">
+            {% to_json selected_meal_plan_data %}
+        </div>
+        <div id="bookmarked-meals-data">
+            {% to_json all_uva_meals_data %}
+        </div>
+        <div id="all-recipes-data">
+            {% to_json all_recipes_data %}
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <div class="mt-3 flex flex-col w-95vw">
+            <h2>Meal Planner</h2>
+            <div class="row mt-3 meal-planner">
+                <div class="col-3 bookmarks-sticky-top">
+                    <div class="accordion" id="meal-accordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#bookmarked-meals" aria-expanded="true" aria-controls="collapse-meals">
+                                    Dining Hall
+                                </button>
+                            </h2>
+                            <div id="bookmarked-meals" class="accordion-collapse collapse show" data-bs-parent="#meal-accordion">
+                                <div class="accordion-body bookmark-content">
+                                    {% if selected_meal_plan|length == 0 %}
+                                        <p>A meal plan must be selected to view bookmarked meals.<p>
+                                    {% elif bookmarked_meals|length == 0 %}
+                                        <p>You haven't bookmarked any meals for this week.</p>
+                                    {% else %}
+                                        {%for meal in bookmarked_meals %}
+                                            <div class="meal-card">
+                                                <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }}>
+                                                    <div class="card-header">
+                                                        {{ meal.dining_hall }}
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{ meal.title }}</h5>
+                                                        <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
+                                                        <p class="card-text">{{ meal.description }}</p>
+                                                        <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
+                                                            <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                            View
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion mt-3" id="recipe-accordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#bookmarked-recipes" aria-expanded="true" aria-controls="collapse-meals">
+                                    Recipes
+                                </button>
+                            </h2>
+                            <div id="bookmarked-recipes" class="accordion-collapse collapse show" data-bs-parent="#recipe-accordion">
+                                <div class="accordion-body bookmark-content">
+                                    {% if bookmarked_recipes|length == 0%}
+                                        <p>You haven't bookmarked any recipes.</p>
+                                    {% else %}
+                                        {%for recipe in bookmarked_recipes %}
+                                            <div class="recipe-card">
+                                                <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }}>
+                                                    <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" />
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
+                                                        <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo({{ recipe.recipe_id }});">
+                                                            <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                            View
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-9">
+                    <div class="meal-planner-controls mb-3 d-flex flex-row">
+                        <button class="btn btn-success dropdown-toggle me-3" type="button" data-bs-toggle="dropdown">
+                            {% if selected_meal_plan|length > 0 %}
+                                {{ selected_meal_plan.plan_name }}
+                            {% else %}
+                                Choose a Meal Plan
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu">
+                            {% if meal_plans|length == 0 %}
+                                <li class="dropdown-item">No meal plans found</li>
+                            {% endif %}
+                            {% for meal_plan in meal_plans %}
+                                    <li>
+                                        <a class="dropdown-item d-flex flex-row" href="{% url 'specific_meal_plan' meal_plan.plan_id %}">
+                                            <p class="me-3 my-0">{{ meal_plan.plan_name }}</p>
+                                            <p class="text-secondary my-0">{{ meal_plan.week_start }}</p>
+                                        </a>
+                                    </li>
+                            {% endfor %}
+                        </ul>
+                        <button class="btn btn-outline-success me-3" data-bs-toggle="modal" data-bs-target="#create-meal-plan">
+                            <i class="bi bi-calendar-plus"></i>
+                            Create Meal Plan
+                        </button>
+                        <button class="btn btn-outline-success me-3" data-bs-toggle="modal" data-bs-target="#update-meal-plan">
+                            <i class="bi bi-gear"></i>
+                            Meal Plan Settings
+                        </button>
+                        <button class="btn btn-outline-danger me-3" data-bs-toggle="modal" data-bs-target="#delete-meal-plan">
+                            <i class="bi bi-calendar-x"></i>
+                            Delete meal plan
+                        </button>
+                    </div>
+                    
+                    {% if selected_meal_plan|length == 0%}
+                        <div class="d-flex flex-column justify-content-center align-items-center mt-3">
+                            <h3>No Meal Plans Found</h3>
+                            <p>To create a meal plan, click on the Create Meal Plan button.</p>
+                        </div>
+                    {% else %}
+                
+                        <div class="w-100 meal-plan-table-wrapper">
+                            <table class="table table-bordered meal-plan-table">
+                                <thead>
+                                    <tr>
+                                        <th class="meal-type-col">Meal Type</th>
+                                        <th>Mon {{ week_dates.0 }}</th>
+                                        <th>Tue {{ week_dates.1 }}</th>
+                                        <th>Wed {{ week_dates.2 }}</th>
+                                        <th>Thu {{ week_dates.3 }}</th>
+                                        <th>Fri {{ week_dates.4 }}</th>
+                                        <th>Sat {{ week_dates.5 }}</th>
+                                        <th>Sun {{ week_dates.6 }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="row-min-h">
+                                        <td><strong>Breakfast</strong></td>
+
+                                        {% for i in range %}
+                                            <td class="meal-plan-cell" data-date="{% inc_day_of_week i %}" data-meal-type="Breakfast">
+                                                {% for meal in uva_meals_in_plan %}
+                                                    {% if meal.week_offset == i and meal.plan_meal_type == 'Breakfast' %}
+                                                        <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
+                                                            <div class="card-header">
+                                                                {{ meal.dining_hall }}
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ meal.title }}</h5>
+                                                                <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
+                                                                <p class="card-text">{{ meal.description }}</p>
+                                                                <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
+                                                                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                                    View
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% for recipe in recipes_in_plan %}
+                                                    {% if recipe.week_offset == i and recipe.plan_meal_type == 'Breakfast' %}
+                                                        <div class="recipe-card">
+                                                            <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }}>
+                                                                <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" />
+                                                                <div class="card-body">
+                                                                    <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
+                                                                    <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo({{ recipe.recipe_id }});">
+                                                                        <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                                        View
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr class="row-min-h">
+                                        <td><strong>Lunch</strong></td>
+                                        {% for i in range %}
+                                            <td class="meal-plan-cell" data-date="{% inc_day_of_week i %}" data-meal-type="Lunch">
+                                                {% for meal in uva_meals_in_plan %}
+                                                    {% if meal.week_offset == i and meal.plan_meal_type == 'Lunch' %}
+                                                        <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
+                                                            <div class="card-header">
+                                                                {{ meal.dining_hall }}
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ meal.title }}</h5>
+                                                                <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
+                                                                <p class="card-text">{{ meal.description }}</p>
+                                                                <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
+                                                                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                                    View
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% for recipe in recipes_in_plan %}
+                                                    {% if recipe.week_offset == i and recipe.plan_meal_type == 'Lunch' %}
+                                                        <div class="recipe-card">
+                                                            <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }}>
+                                                                <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" />
+                                                                <div class="card-body">
+                                                                    <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
+                                                                    <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo({{ recipe.recipe_id }});">
+                                                                        <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                                        View
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr class="row-min-h">
+                                        <td><strong>Dinner</strong></td>
+                                        {% for i in range %}
+                                            <td class="meal-plan-cell" data-date="{% inc_day_of_week i %}" data-meal-type="Dinner">
+                                                {% for meal in uva_meals_in_plan %}
+                                                    {% if meal.week_offset == i and meal.plan_meal_type == 'Dinner' %}
+                                                        <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
+                                                            <div class="card-header">
+                                                                {{ meal.dining_hall }}
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ meal.title }}</h5>
+                                                                <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
+                                                                <p class="card-text">{{ meal.description }}</p>
+                                                                <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
+                                                                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                                    View
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% for recipe in recipes_in_plan %}
+                                                    {% if recipe.week_offset == i and recipe.plan_meal_type == 'Dinner' %}
+                                                        <div class="recipe-card">
+                                                            <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }}>
+                                                                <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" />
+                                                                <div class="card-body">
+                                                                    <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
+                                                                    <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo({{ recipe.recipe_id }});">
+                                                                        <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                                        View
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr class="row-min-h">
+                                        <td><strong>Snacks</strong></td>
+                                        {% for i in range %}
+                                            <td class="meal-plan-cell" data-date="{% inc_day_of_week i %}" data-meal-type="Snacks">
+                                                {% for meal in uva_meals_in_plan %}
+                                                    {% if meal.week_offset == i and meal.plan_meal_type == 'Snacks' %}
+                                                        <div class="card mb-3 uva-dining-meal" data-meal-id={{ meal.meal_id }} data-plan-item-id={{ meal.item_id }}>
+                                                            <div class="card-header">
+                                                                {{ meal.dining_hall }}
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ meal.title }}</h5>
+                                                                <h6 class="card-subtitle mb-2 text-muted">{{ meal.meal_type }} {{ meal.meal_date }}</h6>
+                                                                <p class="card-text">{{ meal.description }}</p>
+                                                                <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="showMealData({{ meal.meal_id }});">
+                                                                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                                    View
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% for recipe in recipes_in_plan %}
+                                                    {% if recipe.week_offset == i and recipe.plan_meal_type == 'Snacks' %}
+                                                        <div class="recipe-card">
+                                                            <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }}>
+                                                                <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" />
+                                                                <div class="card-body">
+                                                                    <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
+                                                                    <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo({{ recipe.recipe_id }});">
+                                                                        <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                                        View
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="modal fade" tab-index="-1" id="create-meal-plan">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create a New Meal Plan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'create_meal_plan' %}">
+                    {% csrf_token %}
+                    <label class="form-label" for="plan-name">Meal Plan Name</label>
+                    <input type="text" class="form-control mb-3" name="plan-name" placeholder="e.g. Meal Plan 4/12" />
+                    
+                    <label class="form-label" for="plan-start">Week</label>
+                    <input type="date" class="form-control mb-4" name="week-start" />
+
+                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Create Meal Plan</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tab-index="-1" id="update-meal-plan">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ selected_meal_plan.plan_name }} Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'update_meal_plan' %}">
+                    {% csrf_token %}
+                    <label class="form-label" for="plan-name">Meal Plan Name</label>
+                    <input type="text" class="form-control mb-3" name="plan_name" placeholder="e.g. Meal Plan 4/12" />
+                    <input type="hidden" name="plan_id" value="{{ selected_meal_plan.plan_id }}" />
+                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Update Meal Plan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tab-index="-1" id="delete-meal-plan">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete {{ selected_meal_plan.plan_name }}?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'delete_meal_plan' %}">
+                    {% csrf_token %}
+                    <p>You are about to delete {{ selected_meal_plan.plan_name }}. This action is irreversible. Do you want to continue?</p>
+                    <input type="hidden" name="plan_id" value="{{ selected_meal_plan.plan_id }}" />
+                    <button type="submit" class="btn btn-outline-success me-1" data-bs-dismiss="modal">Yes</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">No</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="nutrition-details" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="meal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="meal-description"></p>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td><strong>Amount Per Serving</strong></td>
+                            <td id="serving-size"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Calories</strong></td>
+                            <td id="calories"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Calories From Fat</strong></td>
+                            <td id="calories-from-fat"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Fat</strong></td>
+                            <td id="total-fat"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Saturated Fat</strong></td>
+                            <td id="saturated-fat"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cholestorol</strong></td>
+                            <td id="cholesterol"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sodium</strong></td>
+                            <td id="sodium"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Carbohydrates</strong></td>
+                            <td id="total-carbohydrates"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Protein</strong></td>
+                            <td id="protein"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sugar</strong></td>
+                            <td id="sugar"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dietary Fiber</strong></td>
+                            <td id="dietary-fiber"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="recipeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="recipe-title" style="text-transform: capitalize;"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="container text-center">
+            <div class="w-100 text-start">
+                <p class="d-inline"><strong>Preparation Time:</strong> <p class="d-inline" id="preparation-time"></p></p>
+            </div>
+            <div class="row my-3">
+              <div class="col">
+                <div class="card">
+                  <div class="card-body">
+                    <p style="text-align: left;"><strong>Steps:</strong></p>
+                      <div id="steps">
+
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="card">
+                  <div class="card-body">
+                    <p><strong>Ingredients</strong></p>
+                      <div id="ingredients">
+
+                      </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+            <hr/>
+            <div class="row">
+              <div class="col-5 mx-auto">
+                <div class="card">
+                  <div class="card-body">
+                    <table class="table">
+                      <tbody>
+                        <tr>
+                          <td style="text-align: left;"><strong>Calories</strong></td>
+                          <td style="text-align: left;" id="recipe-calories"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Total Fat</strong></td>
+                          <td style="text-align: left;" id="recipe-total-fat"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Saturated Fat</strong></td>
+                          <td style="text-align: left;" id="recipe-saturated-fat"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Sodium</strong></td>
+                          <td style="text-align: left;" id="recipe-sodium"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Total Carbohydrates</strong></td>
+                          <td style="text-align: left;" id="recipe-carbohydrates"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Total Sugars</strong></td>
+                          <td style="text-align: left;" id="recipe-sugar"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Protein</strong></td>
+                          <td style="text-align: left;" id="recipe-protein"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
