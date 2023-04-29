@@ -89,20 +89,20 @@
                                         View More
                                     </button>
                                     {% if "user" in request.COOKIES and low_calorie_recipe.is_bookmarked %}
-                                        <button class="d-none btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ low_calorie_recipe.recipe_id }}" onclick="addBookmark({{low_calorie_recipe.recipe_id}}, '{{ low_calorie_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ low_calorie_recipe.recipe_id }}" type="button" id="add-bookmark-{{ low_calorie_recipe.recipe_id }}" onclick="addBookmark({{low_calorie_recipe.recipe_id}}, '{{ low_calorie_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-block btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ low_calorie_recipe.recipe_id }}" onclick="removeBookmark({{low_calorie_recipe.recipe_id}}, '{{ low_calorie_recipe.recipe_name }}');">
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ low_calorie_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ low_calorie_recipe.recipe_id }}" onclick="removeBookmark({{low_calorie_recipe.recipe_id}}, '{{ low_calorie_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
                                     {% elif "user" in request.COOKIES %}
-                                        <button class="btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ low_calorie_recipe.recipe_id }}" onclick="addBookmark({{low_calorie_recipe.recipe_id}}, '{{ low_calorie_recipe.recipe_name }}');">
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ low_calorie_recipe.recipe_id }}" type="button" id="add-bookmark-{{ low_calorie_recipe.recipe_id }}" onclick="addBookmark({{low_calorie_recipe.recipe_id}}, '{{ low_calorie_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-none btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ low_calorie_recipe.recipe_id }}" onclick="removeBookmark({{low_calorie_recipe.recipe_id}}, '{{ low_calorie_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ low_calorie_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ low_calorie_recipe.recipe_id }}" onclick="removeBookmark({{low_calorie_recipe.recipe_id}}, '{{ low_calorie_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
@@ -185,20 +185,20 @@
                                         View More
                                     </button>
                                     {% if "user" in request.COOKIES and breakfast_recipe.is_bookmarked %}
-                                        <button class="d-none btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ breakfast_recipe.recipe_id }}" onclick="addBookmark({{breakfast_recipe.recipe_id}}, '{{ breakfast_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ breakfast_recipe.recipe_id }}" type="button" id="add-bookmark-{{ breakfast_recipe.recipe_id }}" onclick="addBookmark({{breakfast_recipe.recipe_id}}, '{{ breakfast_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-block btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ breakfast_recipe.recipe_id }}" onclick="removeBookmark({{breakfast_recipe.recipe_id}}, '{{ breakfast_recipe.recipe_name }}');">
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ breakfast_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ breakfast_recipe.recipe_id }}" onclick="removeBookmark({{breakfast_recipe.recipe_id}}, '{{ breakfast_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
                                     {% elif "user" in request.COOKIES %}
-                                        <button class="btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ breakfast_recipe.recipe_id }}" onclick="addBookmark({{breakfast_recipe.recipe_id}}, '{{ breakfast_recipe.recipe_name }}');">
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ breakfast_recipe.recipe_id }}" type="button" id="add-bookmark-{{ breakfast_recipe.recipe_id }}" onclick="addBookmark({{breakfast_recipe.recipe_id}}, '{{ breakfast_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-none btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ breakfast_recipe.recipe_id }}" onclick="removeBookmark({{breakfast_recipe.recipe_id}}, '{{ breakfast_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ breakfast_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ breakfast_recipe.recipe_id }}" onclick="removeBookmark({{breakfast_recipe.recipe_id}}, '{{ breakfast_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
@@ -281,20 +281,20 @@
                                         View More
                                     </button>
                                     {% if "user" in request.COOKIES and lunch_recipe.is_bookmarked %}
-                                        <button class="d-none btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ lunch_recipe.recipe_id }}" onclick="addBookmark({{lunch_recipe.recipe_id}}, '{{ lunch_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ lunch_recipe.recipe_id }}" type="button" id="add-bookmark-{{ lunch_recipe.recipe_id }}" onclick="addBookmark({{lunch_recipe.recipe_id}}, '{{ lunch_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-block btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ lunch_recipe.recipe_id }}" onclick="removeBookmark({{lunch_recipe.recipe_id}}, '{{ lunch_recipe.recipe_name }}');">
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ lunch_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ lunch_recipe.recipe_id }}" onclick="removeBookmark({{lunch_recipe.recipe_id}}, '{{ lunch_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
                                     {% elif "user" in request.COOKIES %}
-                                        <button class="btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ lunch_recipe.recipe_id }}" onclick="addBookmark({{lunch_recipe.recipe_id}}, '{{ lunch_recipe.recipe_name }}');">
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ lunch_recipe.recipe_id }}" type="button" id="add-bookmark-{{ lunch_recipe.recipe_id }}" onclick="addBookmark({{lunch_recipe.recipe_id}}, '{{ lunch_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-none btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ lunch_recipe.recipe_id }}" onclick="removeBookmark({{lunch_recipe.recipe_id}}, '{{ lunch_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ lunch_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ lunch_recipe.recipe_id }}" onclick="removeBookmark({{lunch_recipe.recipe_id}}, '{{ lunch_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
@@ -377,20 +377,20 @@
                                         View More
                                     </button>
                                     {% if "user" in request.COOKIES and dinner_recipe.is_bookmarked %}
-                                        <button class="d-none btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ dinner_recipe.recipe_id }}" onclick="addBookmark({{dinner_recipe.recipe_id}}, '{{ dinner_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ dinner_recipe.recipe_id }}" type="button" id="add-bookmark-{{ dinner_recipe.recipe_id }}" onclick="addBookmark({{dinner_recipe.recipe_id}}, '{{ dinner_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-block btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ dinner_recipe.recipe_id }}" onclick="removeBookmark({{dinner_recipe.recipe_id}}, '{{ dinner_recipe.recipe_name }}');">
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ dinner_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ dinner_recipe.recipe_id }}" onclick="removeBookmark({{dinner_recipe.recipe_id}}, '{{ dinner_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
                                     {% elif "user" in request.COOKIES %}
-                                        <button class="btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ dinner_recipe.recipe_id }}" onclick="addBookmark({{dinner_recipe.recipe_id}}, '{{ dinner_recipe.recipe_name }}');">
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ dinner_recipe.recipe_id }}" type="button" id="add-bookmark-{{ dinner_recipe.recipe_id }}" onclick="addBookmark({{dinner_recipe.recipe_id}}, '{{ dinner_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-none btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ dinner_recipe.recipe_id }}" onclick="removeBookmark({{dinner_recipe.recipe_id}}, '{{ dinner_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ dinner_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ dinner_recipe.recipe_id }}" onclick="removeBookmark({{dinner_recipe.recipe_id}}, '{{ dinner_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
@@ -473,20 +473,20 @@
                                         View More
                                     </button>
                                     {% if "user" in request.COOKIES and appetizers_recipe.is_bookmarked %}
-                                        <button class="d-none btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ appetizers_recipe.recipe_id }}" onclick="addBookmark({{appetizers_recipe.recipe_id}}, '{{ appetizers_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ appetizers_recipe.recipe_id }}" type="button" id="add-bookmark-{{ appetizers_recipe.recipe_id }}" onclick="addBookmark({{appetizers_recipe.recipe_id}}, '{{ appetizers_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-block btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ appetizers_recipe.recipe_id }}" onclick="removeBookmark({{appetizers_recipe.recipe_id}}, '{{ appetizers_recipe.recipe_name }}');">
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ appetizers_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ appetizers_recipe.recipe_id }}" onclick="removeBookmark({{appetizers_recipe.recipe_id}}, '{{ appetizers_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
                                     {% elif "user" in request.COOKIES %}
-                                        <button class="btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ appetizers_recipe.recipe_id }}" onclick="addBookmark({{appetizers_recipe.recipe_id}}, '{{ appetizers_recipe.recipe_name }}');">
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ appetizers_recipe.recipe_id }}" type="button" id="add-bookmark-{{ appetizers_recipe.recipe_id }}" onclick="addBookmark({{appetizers_recipe.recipe_id}}, '{{ appetizers_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-none btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ appetizers_recipe.recipe_id }}" onclick="removeBookmark({{appetizers_recipe.recipe_id}}, '{{ appetizers_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ appetizers_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ appetizers_recipe.recipe_id }}" onclick="removeBookmark({{appetizers_recipe.recipe_id}}, '{{ appetizers_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
@@ -569,20 +569,20 @@
                                         View More
                                     </button>
                                     {% if "user" in request.COOKIES and desserts_recipe.is_bookmarked %}
-                                        <button class="d-none btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ desserts_recipe.recipe_id }}" onclick="addBookmark({{desserts_recipe.recipe_id}}, '{{ desserts_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ desserts_recipe.recipe_id }}" type="button" id="add-bookmark-{{ desserts_recipe.recipe_id }}" onclick="addBookmark({{desserts_recipe.recipe_id}}, '{{ desserts_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-block btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ desserts_recipe.recipe_id }}" onclick="removeBookmark({{desserts_recipe.recipe_id}}, '{{ desserts_recipe.recipe_name }}');">
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ desserts_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ desserts_recipe.recipe_id }}" onclick="removeBookmark({{desserts_recipe.recipe_id}}, '{{ desserts_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
                                     {% elif "user" in request.COOKIES %}
-                                        <button class="btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ desserts_recipe.recipe_id }}" onclick="addBookmark({{desserts_recipe.recipe_id}}, '{{ desserts_recipe.recipe_name }}');">
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ desserts_recipe.recipe_id }}" type="button" id="add-bookmark-{{ desserts_recipe.recipe_id }}" onclick="addBookmark({{desserts_recipe.recipe_id}}, '{{ desserts_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-none btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ desserts_recipe.recipe_id }}" onclick="removeBookmark({{desserts_recipe.recipe_id}}, '{{ desserts_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ desserts_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ desserts_recipe.recipe_id }}" onclick="removeBookmark({{desserts_recipe.recipe_id}}, '{{ desserts_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
@@ -665,20 +665,20 @@
                                         View More
                                     </button>
                                     {% if "user" in request.COOKIES and vegetarian_recipe.is_bookmarked %}
-                                        <button class="d-none btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ vegetarian_recipe.recipe_id }}" onclick="addBookmark({{vegetarian_recipe.recipe_id}}, '{{ vegetarian_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ vegetarian_recipe.recipe_id }}" type="button" id="add-bookmark-{{ vegetarian_recipe.recipe_id }}" onclick="addBookmark({{vegetarian_recipe.recipe_id}}, '{{ vegetarian_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-block btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ vegetarian_recipe.recipe_id }}" onclick="removeBookmark({{vegetarian_recipe.recipe_id}}, '{{ vegetarian_recipe.recipe_name }}');">
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ vegetarian_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ vegetarian_recipe.recipe_id }}" onclick="removeBookmark({{vegetarian_recipe.recipe_id}}, '{{ vegetarian_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
                                     {% elif "user" in request.COOKIES %}
-                                        <button class="btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ vegetarian_recipe.recipe_id }}" onclick="addBookmark({{vegetarian_recipe.recipe_id}}, '{{ vegetarian_recipe.recipe_name }}');">
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ vegetarian_recipe.recipe_id }}" type="button" id="add-bookmark-{{ vegetarian_recipe.recipe_id }}" onclick="addBookmark({{vegetarian_recipe.recipe_id}}, '{{ vegetarian_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-none btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ vegetarian_recipe.recipe_id }}" onclick="removeBookmark({{vegetarian_recipe.recipe_id}}, '{{ vegetarian_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ vegetarian_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ vegetarian_recipe.recipe_id }}" onclick="removeBookmark({{vegetarian_recipe.recipe_id}}, '{{ vegetarian_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
@@ -761,20 +761,20 @@
                                         View More
                                     </button>
                                     {% if "user" in request.COOKIES and vegan_recipe.is_bookmarked %}
-                                        <button class="d-none btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ vegan_recipe.recipe_id }}" onclick="addBookmark({{vegan_recipe.recipe_id}}, '{{ vegan_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ vegan_recipe.recipe_id }}" type="button" id="add-bookmark-{{ vegan_recipe.recipe_id }}" onclick="addBookmark({{vegan_recipe.recipe_id}}, '{{ vegan_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-block btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ vegan_recipe.recipe_id }}" onclick="removeBookmark({{vegan_recipe.recipe_id}}, '{{ vegan_recipe.recipe_name }}');">
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ vegan_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ vegan_recipe.recipe_id }}" onclick="removeBookmark({{vegan_recipe.recipe_id}}, '{{ vegan_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>
                                     {% elif "user" in request.COOKIES %}
-                                        <button class="btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ vegan_recipe.recipe_id }}" onclick="addBookmark({{vegan_recipe.recipe_id}}, '{{ vegan_recipe.recipe_name }}');">
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ vegan_recipe.recipe_id }}" type="button" id="add-bookmark-{{ vegan_recipe.recipe_id }}" onclick="addBookmark({{vegan_recipe.recipe_id}}, '{{ vegan_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark"></i>
                                             Bookmark
                                         </button>
-                                        <button class="d-none btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ vegan_recipe.recipe_id }}" onclick="removeBookmark({{vegan_recipe.recipe_id}}, '{{ vegan_recipe.recipe_name }}');">
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ vegan_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ vegan_recipe.recipe_id }}" onclick="removeBookmark({{vegan_recipe.recipe_id}}, '{{ vegan_recipe.recipe_name }}');">
                                             <i class="bi bi-bookmark-x"></i>
                                             Remove
                                         </button>

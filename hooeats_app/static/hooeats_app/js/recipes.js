@@ -180,11 +180,16 @@ const postToRecipesAPI = (url, data) => __awaiter(this, void 0, void 0, function
         return { "result": "Connection Failure" };
     }
 });
-const toggleAddRemove = (recipeId, showAdd) => {
-    const addButton = document.getElementById(`add-bookmark-${recipeId}`);
-    console.log(addButton);
-    const removeButton = document.getElementById(`remove-bookmark-${recipeId}`);
-    console.log(removeButton);
+const toggleAddRemoveAll = (recipeId, showAdd) => {
+    const addButtons = document.getElementsByClassName(`add-bookmark-${recipeId}`);
+    const removeButtons = document.getElementsByClassName(`remove-bookmark-${recipeId}`);
+    for(let i = 0; i < addButtons.length; i++){
+        toggleAddRemove(showAdd, addButtons[i], removeButtons[i]);
+    }
+    
+};
+
+const toggleAddRemove = (showAdd, addButton, removeButton) => {
     if (!addButton || !removeButton) {
         return;
     }
@@ -201,6 +206,7 @@ const toggleAddRemove = (recipeId, showAdd) => {
         addButton.classList.add("d-none");
     }
 };
+
 const addBookmark = (recipeId, recipeName) => {
     const data = {
         recipe_id: recipeId
@@ -217,7 +223,7 @@ const addBookmark = (recipeId, recipeName) => {
                 const header = `<i class="bi bi-bookmark-check me-3"></i> Successfully Bookmarked Meal`;
                 const message = `<p>We successfully added ${words.join(" ")} to your bookmarks.`;
                 addToast(header, message, true);
-                toggleAddRemove(recipeId, false);
+                toggleAddRemoveAll(recipeId, false);
             }
             else {
                 const header = `<i class="bi bi-bookmark-check me-3"></i> Unable to Add Bookmark`;
@@ -242,7 +248,7 @@ const removeBookmark = (recipeId, recipeName) => {
                 const header = `<i class="bi bi-bookmark-x me-3"></i> Successfully Removed Bookmark`;
                 const message = `<p>We successfully removed ${words.join(" ")} from your bookmarks.`;
                 addToast(header, message, true);
-                toggleAddRemove(recipeId, true);
+                toggleAddRemoveAll(recipeId, true);
             }
             else {
                 const header = `<i class="bi bi-bookmark-x me-3"></i> Unable to Remove Bookmark`;
