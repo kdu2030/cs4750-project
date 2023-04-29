@@ -30,11 +30,9 @@
             </button>
             <a class="text-decoration-none text-white" href="{%url 'index'%}"><h1 class="fs-3 mt-2 ms-2">Hoo Eats</h1></a>
         </div>
-        <form class="d-flex flex-row">
-            <input type="text" name="search" class="form-control search-bar" placeholder="Search for recipes or dining hall meals" />
-            <button type="submit" class="ms-2 btn btn-success">
-                <i class="bi bi-search"></i>
-            </button>
+        <form action="{% url 'search_results' %}" method="get" class="d-flex flex-row">
+            <input type="text" name="keyword" class = "form-control search-bar" placeholder="Search for recipes or dining hall meals" />
+            <button type="submit" class="ms-2 btn btn-success">Search</button>
         </form>
         {% if "user" in request.COOKIES %}
             <button class="btn d-flex flex-row me-3 align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
