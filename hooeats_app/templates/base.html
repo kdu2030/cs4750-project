@@ -97,19 +97,16 @@
                     <i class="bi bi-cup-straw me-2"></i>
                     Runk
                 </a>
-<<<<<<< HEAD
                 <a href="{% url 'recipes' %}" class="list-group-item list-group-item-action">
                     <i class="bi bi-journals"></i>
                     Recipes
                 </a>
-=======
                 {% if "user" in request.COOKIES %}
                     <a href="{% url 'account_settings' %}" class="list-group-item list-group-item-action">
                         <i class="bi bi-gear-wide me-2"></i>
                         Account Settings
                     </a>
                 {% endif %}
->>>>>>> main
                 {% if "user" not in request.COOKIES %}
                    <a href="{% url 'signin' %}" class="list-group-item list-group-item-action">
                      <i class="bi bi-box-arrow-in-right me-2"></i>
