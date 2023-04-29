@@ -41,7 +41,49 @@
                             <div class="img-wrapper"><img src="{{ low_calorie_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ low_calorie_recipe.recipe_name }}</h5>
-                                <div class="d-flex flex-row justify-content-center">
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if low_calorie_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif low_calorie_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if low_calorie_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif low_calorie_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if low_calorie_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif low_calorie_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if low_calorie_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif low_calorie_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if low_calorie_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif low_calorie_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if low_calorie_recipe.rating_count == 1 %}
+                                        <h5 style="margin: 0 5px">{{ low_calorie_recipe.rating_count }} Rating</h5>
+                                    {% else %}
+                                        <h5 style="margin: 0 5px">{{ low_calorie_recipe.rating_count }} Ratings</h5>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
                                     <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
@@ -95,7 +137,49 @@
                             <div class="img-wrapper"><img src="{{ breakfast_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ breakfast_recipe.recipe_name }}</h5>
-                                <div class="d-flex flex-row justify-content-center">
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if breakfast_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif breakfast_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if breakfast_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif breakfast_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if breakfast_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif breakfast_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if breakfast_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif breakfast_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if breakfast_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif breakfast_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if breakfast_recipe.rating_count == 1 %}
+                                        <h5 style="margin: 0 5px">{{ breakfast_recipe.rating_count }} Rating</h5>
+                                    {% else %}
+                                        <h5 style="margin: 0 5px">{{ breakfast_recipe.rating_count }} Ratings</h5>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
                                     <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
@@ -149,7 +233,49 @@
                             <div class="img-wrapper"><img src="{{ lunch_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ lunch_recipe.recipe_name }}</h5>
-                                <div class="d-flex flex-row justify-content-center">
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if lunch_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif lunch_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if lunch_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif lunch_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if lunch_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif lunch_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if lunch_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif lunch_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if lunch_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif lunch_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if lunch_recipe.rating_count == 1 %}
+                                        <h5 style="margin: 0 5px">{{ lunch_recipe.rating_count }} Rating</h5>
+                                    {% else %}
+                                        <h5 style="margin: 0 5px">{{ lunch_recipe.rating_count }} Ratings</h5>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
                                     <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
@@ -203,7 +329,49 @@
                             <div class="img-wrapper"><img src="{{ dinner_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ dinner_recipe.recipe_name }}</h5>
-                                <div class="d-flex flex-row justify-content-center">
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if dinner_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif dinner_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if dinner_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif dinner_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if dinner_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif dinner_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if dinner_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif dinner_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if dinner_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif dinner_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if dinner_recipe.rating_count == 1 %}
+                                        <h5 style="margin: 0 5px">{{ dinner_recipe.rating_count }} Rating</h5>
+                                    {% else %}
+                                        <h5 style="margin: 0 5px">{{ dinner_recipe.rating_count }} Ratings</h5>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
                                     <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
@@ -257,7 +425,49 @@
                             <div class="img-wrapper"><img src="{{ appetizers_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ appetizers_recipe.recipe_name }}</h5>
-                                <div class="d-flex flex-row justify-content-center">
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if appetizers_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif appetizers_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if appetizers_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif appetizers_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if appetizers_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif appetizers_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if appetizers_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif appetizers_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if appetizers_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif appetizers_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if appetizers_recipe.rating_count == 1 %}
+                                        <h5 style="margin: 0 5px">{{ appetizers_recipe.rating_count }} Rating</h5>
+                                    {% else %}
+                                        <h5 style="margin: 0 5px">{{ appetizers_recipe.rating_count }} Ratings</h5>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
                                     <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
@@ -311,7 +521,49 @@
                             <div class="img-wrapper"><img src="{{ desserts_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ desserts_recipe.recipe_name }}</h5>
-                                <div class="d-flex flex-row justify-content-center">
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if desserts_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif desserts_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if desserts_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif desserts_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if desserts_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif desserts_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if desserts_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif desserts_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if desserts_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif desserts_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if desserts_recipe.rating_count == 1 %}
+                                        <h5 style="margin: 0 5px">{{ desserts_recipe.rating_count }} Rating</h5>
+                                    {% else %}
+                                        <h5 style="margin: 0 5px">{{ desserts_recipe.rating_count }} Ratings</h5>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
                                     <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
@@ -365,7 +617,49 @@
                             <div class="img-wrapper"><img src="{{ vegetarian_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ vegetarian_recipe.recipe_name }}</h5>
-                                <div class="d-flex flex-row justify-content-center">
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if vegetarian_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegetarian_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegetarian_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegetarian_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegetarian_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegetarian_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegetarian_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegetarian_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegetarian_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegetarian_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegetarian_recipe.rating_count == 1 %}
+                                        <h5 style="margin: 0 5px">{{ vegetarian_recipe.rating_count }} Rating</h5>
+                                    {% else %}
+                                        <h5 style="margin: 0 5px">{{ vegetarian_recipe.rating_count }} Ratings</h5>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
                                     <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
@@ -419,7 +713,49 @@
                             <div class="img-wrapper"><img src="{{ vegan_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ vegan_recipe.recipe_name }}</h5>
-                                <div class="d-flex flex-row justify-content-center">
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if vegan_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegan_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegan_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegan_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegan_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegan_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegan_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegan_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegan_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegan_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegan_recipe.rating_count == 1 %}
+                                        <h5 style="margin: 0 5px">{{ vegan_recipe.rating_count }} Rating</h5>
+                                    {% else %}
+                                        <h5 style="margin: 0 5px">{{ vegan_recipe.rating_count }} Ratings</h5>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
                                     <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
