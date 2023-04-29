@@ -78,81 +78,85 @@ const addNutritionalInfo = (title, diningHall, section) => {
         }
     });
 };
-const postToDiningHallAPI = (url, data) => __awaiter(this, void 0, void 0, function* () {
-    const token = document.getElementsByName("csrfmiddlewaretoken")[0];
-    if (!token) {
-        return;
-    }
-    let request = {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": token.value,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    };
-    try {
-        const response = yield fetch(url, request);
-        return yield response.json();
-    }
-    catch (error) {
-        return { "result": "Connection Failure" };
-    }
-});
-const toggleAddRemove = (mealId, showAdd) => {
-    const addButton = document.getElementById(`add-bookmark-${mealId}`);
-    const removeButton = document.getElementById(`remove-bookmark-${mealId}`);
-    if (!addButton || !removeButton) {
-        return;
-    }
-    if (showAdd) {
-        addButton.classList.remove("d-none");
-        addButton.classList.add("d-block");
-        removeButton.classList.remove("d-block");
-        removeButton.classList.add("d-none");
-    }
-    else {
-        removeButton.classList.remove("d-none");
-        removeButton.classList.add("d-block");
-        addButton.classList.remove("d-block");
-        addButton.classList.add("d-none");
-    }
-};
-const addBookmark = (mealId, mealTitle) => {
-    const data = {
-        meal_id: mealId
-    };
-    postToDiningHallAPI("/api/dining-hall/insert-bookmark/", data)
-        .then((response) => {
-        if (response.result === "Insertion Successful") {
-            const header = `<i class="bi bi-bookmark-check me-3"></i> Successfully Bookmarked Meal`;
-            const message = `<p>We successfully added ${mealTitle} to your bookmarks.`;
-            addToast(header, message, true);
-            toggleAddRemove(mealId, false);
-        }
-        else {
-            const header = `<i class="bi bi-bookmark-check me-3"></i> Unable to Add Bookmark`;
-            const message = `<p>We were unable to add ${mealTitle} to your bookmarks. Please try again`;
-            addToast(header, message, false);
-        }
+
+const populateRecipeIngredients = (ingredientsList) => {
+    let ingredientsHTML = "";
+    ingredientsList.forEach((ingredient) => {
+       ingredientsHTML += `<p class="mb-3">${ingredient.ingredient}</p>` 
     });
-};
-const removeBookmark = (mealId, mealTitle) => {
-    const data = {
-        meal_id: mealId
-    };
-    postToDiningHallAPI("/api/dining-hall/remove-bookmark/", data)
-        .then((response) => {
-        if (response.result === "Deletion Successful") {
-            const header = `<i class="bi bi-bookmark-x me-3"></i> Successfully Removed Bookmark`;
-            const message = `<p>We successfully removed ${mealTitle} from your bookmarks.`;
-            addToast(header, message, true);
-            toggleAddRemove(mealId, true);
+    const ingredients = document.getElementById("ingredients");
+    ingredients.innerHTML = "";
+    ingredients.insertAdjacentHTML("beforeend", ingredientsHTML);
+}
+
+const populateRecipeSteps = (recipeList) => {
+    let stepsHTML = "";
+    recipeList.forEach((recipe, index) => {
+        firstLetter = recipe.charAt(0).toUpperCase();
+        sentence = firstLetter + recipe.slice(1);
+        sentence = sentence.replace("degrees f", "degrees F");
+        sentence = sentence.replaceAll(" , ", ", ")
+        sentence = sentence.replaceAll(" / ", "/")
+        if(sentence.search(/[.?!]$/) == -1){
+            sentence += ".";
         }
-        else {
-            const header = `<i class="bi bi-bookmark-x me-3"></i> Unable to Remove Bookmark`;
-            const message = `<p>We were unable to remove ${mealTitle} from your bookmarks. Please try again`;
+        stepsHTML += `<p class="mb-3" style="text-align: left;">${index + 1}. ${sentence}</p>` 
+    });
+    const steps = document.getElementById("steps");
+    steps.innerHTML = "";
+    steps.insertAdjacentHTML("beforeend", stepsHTML);
+}
+
+const addRecipeNutritionalInfo = (recipe_id) => {
+    const url = "/api/search-results/" + encodeURIComponent(recipe_id) + "/";
+    fetch(url)
+        .then(response => response.json())
+        .then((apiResponse) => {
+        // If we get an error from the API
+        if ("result" in apiResponse && apiResponse.result === "Database error") {
+            const header = `<i class="bi bi-x-circle-fill me-3"></i> Unable to Connect`;
+            const message = "We were unable to reach our servers. Please try again.";
             addToast(header, message, false);
+            return;
+        }
+        const modalElements = {
+            recipe_name: document.getElementById("recipe-title"),
+            //average_rating: document.getElementById("average-rating"),
+            mins: document.getElementById("preparation-time"),
+            calories: document.getElementById("recipe-calories"),
+            total_fat: document.getElementById("recipe-total-fat"),
+            saturated_fat: document.getElementById("recipe-saturated-fat"),
+            sodium: document.getElementById("recipe-sodium"),
+            carbohydrates: document.getElementById("recipe-carbohydrates"),
+            protein: document.getElementById("recipe-protein"),
+            sugar: document.getElementById("recipe-sugar"),
+            //steps: document.getElementById("steps"),
+        };
+        const nutritionData = apiResponse;
+        populateRecipeIngredients(nutritionData.ingredients);
+        populateRecipeSteps(nutritionData.steps)
+        //if (nutritionData.steps) {
+          //  modalElements["steps"].innerText = nutritionData.steps;
+        //}
+        for (const key in modalElements) {
+            if (["sodium"].includes(key)) {
+                modalElements[key].innerText = `${nutritionData[key]}mg`;
+            }
+            else if (key === "calories") {
+                modalElements[key].innerText = `${nutritionData[key]}`;
+            }
+            else if (key === "mins") {
+                modalElements[key].innerText = `${nutritionData[key]} minutes`;
+            }
+            //else if (key === "average_rating") {
+              //  modalElements[key].innerText = `${nutritionData[key]}/5`;
+            //}
+            else if (typeof nutritionData[key] === "number") {
+                modalElements[key].innerText = `${nutritionData[key]}g`;
+            }
+            else {
+                modalElements[key].innerText = `${nutritionData[key]}`;
+            }
         }
     });
 };
