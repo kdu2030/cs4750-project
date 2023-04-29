@@ -10,7 +10,7 @@ def get_search_results(keyword: str, username: str = ""):
     uva_dining_search_query = "SELECT * FROM uva_meals NATURAL JOIN uva_descriptions WHERE uva_meals.title LIKE ? OR uva_meals.section LIKE ? OR uva_descriptions.description LIKE ? OR uva_meals.dining_hall LIKE ? LIMIT 10;"
     recipe_search_query = "SELECT * FROM recipes NATURAL JOIN recipe_instructions NATURAL JOIN recipe_images WHERE recipes.recipe_name LIKE ? OR recipe_instructions.steps LIKE ?;"
     recipe_tag_search_query = "SELECT DISTINCT recipe_id FROM recipe_tags WHERE tag LIKE ?;"
-    recipe_ingredients_search_query = "SELECT DISTINCT recipe_id FROM recipe_ingredients WHERE ingredient LIKE ?;"
+    recipe_ingredients_search_query = "SELECT DISTINCT recipe_id FROM recipe_ingredients2 WHERE ingredient LIKE ?;"
 
     database = HooEatsDatabase(secure=True)
     uva_dining_search_results = database.execute_secure(True, uva_dining_search_query, query_keyword, query_keyword, query_keyword, query_keyword)
@@ -67,7 +67,7 @@ def get_search_results(keyword: str, username: str = ""):
 
     #Adding all the ingredients to the recipe items
     for recipe in recipe_items:
-        recipe_ingredients_query = "SELECT ingredient FROM recipe_ingredients WHERE recipe_id = ?;"
+        recipe_ingredients_query = "SELECT ingredient FROM recipe_ingredients2 WHERE recipe_id = ?;"
         ingredients = database.execute_secure(True, recipe_ingredients_query, recipe["recipe_id"])
         recipe["ingredients"] = []
         for ingredient in ingredients:
@@ -109,6 +109,20 @@ def search_results_view(request: HttpRequest) -> HttpRequest:
         results = get_search_results(keyword)
     context = {'keyword' : keyword, **results}
     return render(request, 'hooeats_app/search-results.html', context)
+
+def fetch_recipe_nutritional_data(request: HttpRequest, recipe_id: int) -> JsonResponse:
+     query = "SELECT * FROM recipes NATURAL JOIN recipe_instructions NATURAL JOIN recipe_images WHERE recipes.recipe_id=?;"
+     ingredient_query = "SELECT ingredient FROM recipe_ingredients2 WHERE recipe_id=?;"
+     try:
+          database = HooEatsDatabase(secure=True)
+          nutritional_data = database.execute_secure(True, query, recipe_id)[0]
+          ingredient_data = database.execute_secure(True, ingredient_query, recipe_id)
+          nutritional_data["ingredients"] = ingredient_data
+          nutritional_data["steps"] = eval(nutritional_data["steps"])
+          return JsonResponse(nutritional_data)
+     except:
+          error = {"result": "Database Error"}
+          return JsonResponse(error)
 
 def get_bookmarked_meals(database: HooEatsDatabase, username: str) -> List[Dict]:
      query = "SELECT meal_id FROM bookmark_meals WHERE username=?"
