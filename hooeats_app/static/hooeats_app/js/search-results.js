@@ -32,7 +32,7 @@ const addToast = (header, message, successful) => {
     setTimeout(() => { toastContainer.removeChild(toast); }, 5000);
 };
 const addNutritionalInfo = (title, diningHall, section) => {
-    const url = "/api/dining-hall/" + encodeURIComponent(title) + "/" + encodeURIComponent(diningHall) + "/" + encodeURIComponent(section);
+    const url = "/api/dining-hall/" + encodeURIComponent(title) + "/" + encodeURIComponent(diningHall) + "/" + encodeURIComponent(section) + "/";
     fetch(url)
         .then(response => response.json())
         .then((apiResponse) => {
@@ -140,23 +140,175 @@ const addRecipeNutritionalInfo = (recipe_id) => {
         //}
         for (const key in modalElements) {
             if (["sodium"].includes(key)) {
-                modalElements[key].innerText = `${nutritionData[key]}mg`;
+                modalElements[key].innerText = `${nutritionData[key].toFixed(2)} mg`;
             }
             else if (key === "calories") {
-                modalElements[key].innerText = `${nutritionData[key]}`;
+                modalElements[key].innerText = `${nutritionData[key].toFixed(0)}`;
             }
             else if (key === "mins") {
-                modalElements[key].innerText = `${nutritionData[key]} minutes`;
+                modalElements[key].innerText = `${nutritionData[key].toFixed(2)} minutes`;
             }
             //else if (key === "average_rating") {
               //  modalElements[key].innerText = `${nutritionData[key]}/5`;
             //}
             else if (typeof nutritionData[key] === "number") {
-                modalElements[key].innerText = `${nutritionData[key]}g`;
+                modalElements[key].innerText = `${nutritionData[key].toFixed(2)} g`;
             }
             else {
                 modalElements[key].innerText = `${nutritionData[key]}`;
             }
         }
     });
+};
+
+const postToDiningHallAPI = (url, data) => __awaiter(this, void 0, void 0, function* () {
+    const token = document.getElementsByName("csrfmiddlewaretoken")[0];
+    if (!token) {
+        return;
+    }
+    let request = {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": token.value,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    };
+    try {
+        const response = yield fetch(url, request);
+        return yield response.json();
+    }
+    catch (error) {
+        return { "result": "Connection Failure" };
+    }
+});
+const toggleAddRemove = (mealId, showAdd) => {
+    const addButton = document.getElementById(`add-bookmark-${mealId}`);
+    const removeButton = document.getElementById(`remove-bookmark-${mealId}`);
+    if (!addButton || !removeButton) {
+        return;
+    }
+    if (showAdd) {
+        addButton.classList.remove("d-none");
+        addButton.classList.add("d-block");
+        removeButton.classList.remove("d-block");
+        removeButton.classList.add("d-none");
+    }
+    else {
+        removeButton.classList.remove("d-none");
+        removeButton.classList.add("d-block");
+        addButton.classList.remove("d-block");
+        addButton.classList.add("d-none");
+    }
+};
+const addBookmark = (mealId, mealTitle) => {
+    const data = {
+        meal_id: mealId
+    };
+    postToDiningHallAPI("/api/dining-hall/insert-bookmark/", data)
+        .then((response) => {
+        if (response.result === "Insertion Successful") {
+            const header = `<i class="bi bi-bookmark-check me-3"></i> Successfully Bookmarked Meal`;
+            const message = `<p>We successfully added ${mealTitle} to your bookmarks.`;
+            addToast(header, message, true);
+            toggleAddRemove(mealId, false);
+        }
+        else {
+            const header = `<i class="bi bi-bookmark-check me-3"></i> Unable to Add Bookmark`;
+            const message = `<p>We were unable to add ${mealTitle} to your bookmarks. Please try again`;
+            addToast(header, message, false);
+        }
+    });
+};
+const removeBookmark = (mealId, mealTitle) => {
+    const data = {
+        meal_id: mealId
+    };
+    postToDiningHallAPI("/api/dining-hall/remove-bookmark/", data)
+        .then((response) => {
+        if (response.result === "Deletion Successful") {
+            const header = `<i class="bi bi-bookmark-x me-3"></i> Successfully Removed Bookmark`;
+            const message = `<p>We successfully removed ${mealTitle} from your bookmarks.`;
+            addToast(header, message, true);
+            toggleAddRemove(mealId, true);
+        }
+        else {
+            const header = `<i class="bi bi-bookmark-x me-3"></i> Unable to Remove Bookmark`;
+            const message = `<p>We were unable to remove ${mealTitle} from your bookmarks. Please try again`;
+            addToast(header, message, false);
+        }
+    });
+};
+
+const postToRecipesAPI = (url, data) => __awaiter(this, void 0, void 0, function* () {
+    const token = document.getElementsByName("csrfmiddlewaretoken")[0];
+    if (!token) {
+        return;
+    }
+    let request = {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": token.value,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    };
+    try {
+        const response = yield fetch(url, request);
+        return yield response.json();
+    }
+    catch (error) {
+        return { "result": "Connection Failure" };
+    }
+});
+
+const addRecipeBookmark = (recipeId, recipeName) => {
+    const data = {
+        recipe_id: recipeId
+    };
+
+    const words = recipeName.split(" ");
+    for (let i = 0; i < words.length; i++) {
+        words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+    }
+
+    postToRecipesAPI("/api/search-results/insert-bookmark/", data)
+        .then((response) => {
+            if (response.result === "Insertion Successful") {
+                const header = `<i class="bi bi-bookmark-check me-3"></i> Successfully Bookmarked Recipe`;
+                const message = `<p>We successfully added ${words.join(" ")} to your bookmarks.`;
+                addToast(header, message, true);
+                toggleAddRemove(recipeId, false);
+            }
+            else {
+                const header = `<i class="bi bi-bookmark-check me-3"></i> Unable to Add Bookmark`;
+                const message = `<p>We were unable to add ${words.join(" ")} to your bookmarks. Please try again`;
+                addToast(header, message, false);
+            }
+        });
+};
+const removeRecipeBookmark = (recipeId, recipeName) => {
+    const data = {
+        recipe_id: recipeId
+    };
+
+    const words = recipeName.split(" ");
+    for (let i = 0; i < words.length; i++) {
+        words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+    }
+
+    postToRecipesAPI("/api/search-results/remove-bookmark/", data)
+        .then((response) => {
+            if (response.result === "Deletion Successful") {
+                const header = `<i class="bi bi-bookmark-x me-3"></i> Successfully Removed Bookmark`;
+                const message = `<p>We successfully removed ${words.join(" ")} from your bookmarks.`;
+                addToast(header, message, true);
+                toggleAddRemove(recipeId, true);
+            }
+            else {
+                const header = `<i class="bi bi-bookmark-x me-3"></i> Unable to Remove Bookmark`;
+                const message = `<p>We were unable to remove ${words.join(" ")} from your bookmarks. Please try again`;
+                addToast(header, message, false);
+            }
+        });
 };

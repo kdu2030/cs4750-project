@@ -4,6 +4,7 @@ from hooeats_app.db_utils.database import HooEatsDatabase
 from typing import Dict, List
 from datetime import datetime, timedelta
 import json
+from traceback import print_exc
 
 def get_search_results(keyword: str, username: str = ""):
     query_keyword = "%" + keyword + "%"
@@ -91,6 +92,15 @@ def get_search_results(keyword: str, username: str = ""):
            # else:
             #     recipe_item["is_bookmarked"] = False
 
+    if len(username) > 0:
+        bookmarked_recipes = get_bookmarked_recipes(database, username)
+
+        for item in recipe_items:
+            if item["recipe_id"] in bookmarked_recipes:
+                item["is_bookmarked"] = True
+            else:
+                 item["is_bookmarked"] = False
+                 
     database.close()
 
     context = {
@@ -120,6 +130,16 @@ def fetch_recipe_nutritional_data(request: HttpRequest, recipe_id: int) -> JsonR
           nutritional_data["ingredients"] = ingredient_data
           nutritional_data["steps"] = eval(nutritional_data["steps"])
           return JsonResponse(nutritional_data)
+     except:
+          error = {"result": "Database Error"}
+          return JsonResponse(error)
+
+def fetch_nutritional_data(request: HttpRequest, title: str, dining_hall: str, section: str) -> JsonResponse:
+     query = "SELECT * FROM uva_descriptions WHERE title=? AND dining_hall=? AND section=?;"
+     try:
+          database = HooEatsDatabase(secure=True)
+          nutritional_data = database.execute_secure(True, query, title, dining_hall, section)
+          return JsonResponse(nutritional_data[0])
      except:
           error = {"result": "Database Error"}
           return JsonResponse(error)
@@ -157,3 +177,43 @@ def remove_bookmark(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"result": "Deletion Successful"})
     except:
         return JsonResponse({"result": "Database Error"})
+    
+def get_bookmarked_recipes(database: HooEatsDatabase, username: str) -> List[Dict]:
+    query = "SELECT recipe_id FROM bookmark_recipes WHERE username=?"
+    recipe_data =  database.execute_secure(True, query, username)
+    recipe_ids = []
+    for recipe in recipe_data:
+        recipe_ids.append(recipe["recipe_id"])
+    return recipe_ids
+
+def insert_bookmark_recipe(request: HttpRequest) -> JsonResponse:
+    if request.COOKIES.get("user") is None:
+            return JsonResponse({"result": "Authentication error"})
+    data = json.loads(request.body)
+    recipe_id = data["recipe_id"]
+    username = json.loads(request.COOKIES.get("user"))["username"]
+    query = "INSERT INTO bookmark_recipes (username, recipe_id) VALUES (?, ?);"
+    try:
+        database = HooEatsDatabase(secure=True)
+        database.execute_secure(False, query, username, recipe_id)
+        database.close()
+        return JsonResponse({"result": "Insertion Successful"})
+    except:
+        print_exc()
+        return JsonResponse({"result": "Database Error"})
+
+def remove_bookmark_recipe(request: HttpRequest) -> JsonResponse:
+    if request.COOKIES.get("user") is None:
+            return JsonResponse({"result": "Authentication error"})
+    user = json.loads(request.COOKIES.get("user"))["username"]
+    data = json.loads(request.body)
+    delete_bookmark_query = "DELETE FROM bookmark_recipes WHERE recipe_id = ? AND username=?;"
+    try:
+        database = HooEatsDatabase(secure=True)
+        database.execute_secure(False, delete_bookmark_query, data["recipe_id"], user)
+        database.close()
+        return JsonResponse({"result": "Deletion Successful"})
+    except:
+        print_exc()
+        return JsonResponse({"result": "Database Error"})
+    
