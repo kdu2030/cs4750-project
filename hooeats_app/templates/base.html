@@ -38,7 +38,11 @@
         </form>
         {% if "user" in request.COOKIES %}
             <button class="btn d-flex flex-row me-3 align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {% if profile_img %}
+                    <img class="me-2" src="{{ profile_img }}" width="40px" height="40px" />
+                {% else %}
                 <img class="me-2" src="{% get_cookie_value request.COOKIES.user "profile_img" %}" width="40px" height="40px" />
+                {% endif %}
                 <p class="text-white mb-0">{% get_cookie_value request.COOKIES.user "username" %}</p>
             </button>
             <ul class="dropdown-menu" style="right: 0; left: auto">
@@ -95,6 +99,12 @@
                     <i class="bi bi-cup-straw me-2"></i>
                     Runk
                 </a>
+                {% if "user" in request.COOKIES %}
+                    <a href="{% url 'account_settings' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-gear-wide me-2"></i>
+                        Account Settings
+                    </a>
+                {% endif %}
                 {% if "user" not in request.COOKIES %}
                    <a href="{% url 'signin' %}" class="list-group-item list-group-item-action">
                      <i class="bi bi-box-arrow-in-right me-2"></i>
