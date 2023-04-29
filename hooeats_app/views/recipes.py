@@ -132,7 +132,7 @@ def insert_bookmark(request: HttpRequest) -> JsonResponse:
         database.close()
         return JsonResponse({"result": "Insertion Successful"})
     except:
-        print_exc()
+        #print_exc()
         return JsonResponse({"result": "Database Error"})
 
 def remove_bookmark(request: HttpRequest) -> JsonResponse:
@@ -147,7 +147,7 @@ def remove_bookmark(request: HttpRequest) -> JsonResponse:
         database.close()
         return JsonResponse({"result": "Deletion Successful"})
     except:
-        print_exc()
+        #print_exc()
         return JsonResponse({"result": "Database Error"})
     
 def fetch_recipe_nutritional_data(request: HttpRequest, recipe_id: int) -> JsonResponse:
