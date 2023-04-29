@@ -18,5 +18,7 @@ urlpatterns = [
     path("api/dining-hall/<str:title>/<str:dining_hall>/<str:section>/", dining_halls.fetch_nutritional_data, name="meal_nutrition"),
     path("api/dining-hall/insert-bookmark/", dining_halls.insert_bookmark, name="insert_bookmark"),
     path("api/dining-hall/remove-bookmark/", dining_halls.remove_bookmark, name="remove_bookmark"),
+    path("api/recipes/insert-bookmark/", recipes.insert_bookmark, name="insert_bookmark"),
+    path("api/recipes/remove-bookmark/", recipes.remove_bookmark, name="remove_bookmark"),
     path("recipes", recipes.recipe, name="recipes")
 ]

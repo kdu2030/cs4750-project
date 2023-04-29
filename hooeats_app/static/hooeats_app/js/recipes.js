@@ -1,39 +1,3 @@
-// var multipleCardCarousel = document.querySelector(
-//     "#lowCalorieControls"
-// );
-// if (window.matchMedia("(min-width: 768px)").matches) {
-// var carousel = new bootstrap.Carousel(multipleCardCarousel, {
-//     interval: false,
-// });
-// let carouselTest = $(".carousel-inner");
-// var carouselWidth = $(".carousel-inner")[0].scrollWidth;
-// var cardWidth = $(".carousel-item").width();
-// var scrollPosition = 0;
-// $("#lowCalorieControls .carousel-control-next").on("click", function () {
-//     if (scrollPosition < carouselWidth - cardWidth * 4) {
-//         scrollPosition += cardWidth;
-//         $("#lowCalorieControls .carousel-inner").animate(
-//           { scrollLeft: scrollPosition },
-//           600
-//         );
-//     }
-//     });
-//     $("#lowCalorieControls .carousel-control-prev").on("click", function () {
-//       if (scrollPosition > 0) {
-//         scrollPosition -= cardWidth;
-//         $("#lowCalorieControls .carousel-inner").animate(
-//           { scrollLeft: scrollPosition },
-//           600
-//         );
-//     }
-// });
-// } else {
-//     $(multipleCardCarousel).addClass("slide");
-// }
-
-// let carouselWidth = 0;
-// let cardWidth = 0;
-// let scrollPosition = 0;
 const carouselPositions = new Map();
 
 const initializeCarousel = () => {
@@ -108,6 +72,9 @@ const prevButton = (tag) => {
 
     carouselPositions.set(tag, newCarouselData);
 }
+
+
+
 
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -192,7 +159,7 @@ const addNutritionalInfo = (title, diningHall, section) => {
             }
         });
 };
-const postToDiningHallAPI = (url, data) => __awaiter(this, void 0, void 0, function* () {
+const postToRecipesAPI = (url, data) => __awaiter(this, void 0, void 0, function* () {
     const token = document.getElementsByName("csrfmiddlewaretoken")[0];
     if (!token) {
         return;
@@ -213,9 +180,11 @@ const postToDiningHallAPI = (url, data) => __awaiter(this, void 0, void 0, funct
         return { "result": "Connection Failure" };
     }
 });
-const toggleAddRemove = (mealId, showAdd) => {
-    const addButton = document.getElementById(`add-bookmark-${mealId}`);
-    const removeButton = document.getElementById(`remove-bookmark-${mealId}`);
+const toggleAddRemove = (recipeId, showAdd) => {
+    const addButton = document.getElementById(`add-bookmark-${recipeId}`);
+    console.log(addButton);
+    const removeButton = document.getElementById(`remove-bookmark-${recipeId}`);
+    console.log(removeButton);
     if (!addButton || !removeButton) {
         return;
     }
@@ -232,40 +201,52 @@ const toggleAddRemove = (mealId, showAdd) => {
         addButton.classList.add("d-none");
     }
 };
-const addBookmark = (mealId, mealTitle) => {
+const addBookmark = (recipeId, recipeName) => {
     const data = {
-        meal_id: mealId
+        recipe_id: recipeId
     };
-    postToDiningHallAPI("/api/dining-hall/insert-bookmark/", data)
+
+    const words = recipeName.split(" ");
+    for (let i = 0; i < words.length; i++) {
+        words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+    }
+
+    postToRecipesAPI("/api/recipes/insert-bookmark/", data)
         .then((response) => {
             if (response.result === "Insertion Successful") {
                 const header = `<i class="bi bi-bookmark-check me-3"></i> Successfully Bookmarked Meal`;
-                const message = `<p>We successfully added ${mealTitle} to your bookmarks.`;
+                const message = `<p>We successfully added ${words.join(" ")} to your bookmarks.`;
                 addToast(header, message, true);
-                toggleAddRemove(mealId, false);
+                toggleAddRemove(recipeId, false);
             }
             else {
                 const header = `<i class="bi bi-bookmark-check me-3"></i> Unable to Add Bookmark`;
-                const message = `<p>We were unable to add ${mealTitle} to your bookmarks. Please try again`;
+                const message = `<p>We were unable to add ${words.join(" ")} to your bookmarks. Please try again`;
                 addToast(header, message, false);
             }
         });
 };
-const removeBookmark = (mealId, mealTitle) => {
+const removeBookmark = (recipeId, recipeName) => {
     const data = {
-        meal_id: mealId
+        recipe_id: recipeId
     };
-    postToDiningHallAPI("/api/dining-hall/remove-bookmark/", data)
+
+    const words = recipeName.split(" ");
+    for (let i = 0; i < words.length; i++) {
+        words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+    }
+
+    postToRecipesAPI("/api/recipes/remove-bookmark/", data)
         .then((response) => {
             if (response.result === "Deletion Successful") {
                 const header = `<i class="bi bi-bookmark-x me-3"></i> Successfully Removed Bookmark`;
-                const message = `<p>We successfully removed ${mealTitle} from your bookmarks.`;
+                const message = `<p>We successfully removed ${words.join(" ")} from your bookmarks.`;
                 addToast(header, message, true);
-                toggleAddRemove(mealId, true);
+                toggleAddRemove(recipeId, true);
             }
             else {
                 const header = `<i class="bi bi-bookmark-x me-3"></i> Unable to Remove Bookmark`;
-                const message = `<p>We were unable to remove ${mealTitle} from your bookmarks. Please try again`;
+                const message = `<p>We were unable to remove ${words.join(" ")} from your bookmarks. Please try again`;
                 addToast(header, message, false);
             }
         });
