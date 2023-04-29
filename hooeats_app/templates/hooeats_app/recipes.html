@@ -1,0 +1,885 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head_title %} Recipes {% endblock head_title %}
+
+{% block head_content %}
+<link rel="stylesheet" href="{% static 'hooeats_app/recipes.css' %}" />
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script src="{% static 'hooeats_app/js/recipes.js' %}"></script>
+
+<!-- <script src="{% static 'js/popper.js' %}"></script>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script> -->
+{% endblock %}
+
+{% block content %}
+
+<div id="data">
+    {% csrf_token %}
+</div>
+
+<div class="d-flex justify-content-center">
+    <div class="w-95vw">
+
+        <div class="d-flex justify-content-left">
+            <div class="recipes mt-3 flex flex-col">
+                <h2>Recipes</h2>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-left">
+            <div class="dining-halls mt-3 flex flex-col">
+                <h2>Low Calorie</h2>
+            </div>
+        </div>
+        
+        <div id="low-calorie-controls" class="carousel" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for low_calorie_recipe in low_calorie_recipes %}
+                    <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ low_calorie_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-capitalize text-center">{{ low_calorie_recipe.recipe_name }}</h5>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if low_calorie_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif low_calorie_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if low_calorie_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif low_calorie_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if low_calorie_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif low_calorie_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if low_calorie_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif low_calorie_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if low_calorie_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif low_calorie_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if low_calorie_recipe.rating_count == 1 %}
+                                        <p style="margin: 0 5px">{{ low_calorie_recipe.rating_count }} Rating</p>
+                                    {% else %}
+                                        <p style="margin: 0 5px">{{ low_calorie_recipe.rating_count }} Ratings</p>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ low_calorie_recipe.recipe_id }}')">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                        View More
+                                    </button>
+                                    {% if "user" in request.COOKIES and low_calorie_recipe.is_bookmarked %}
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ low_calorie_recipe.recipe_id }}" type="button" id="add-bookmark-{{ low_calorie_recipe.recipe_id }}" onclick="addBookmark({{low_calorie_recipe.recipe_id}}, '{{ low_calorie_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ low_calorie_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ low_calorie_recipe.recipe_id }}" onclick="removeBookmark({{low_calorie_recipe.recipe_id}}, '{{ low_calorie_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% elif "user" in request.COOKIES %}
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ low_calorie_recipe.recipe_id }}" type="button" id="add-bookmark-{{ low_calorie_recipe.recipe_id }}" onclick="addBookmark({{low_calorie_recipe.recipe_id}}, '{{ low_calorie_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ low_calorie_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ low_calorie_recipe.recipe_id }}" onclick="removeBookmark({{low_calorie_recipe.recipe_id}}, '{{ low_calorie_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#low-calorie-controls" onclick="prevButton('low-calorie');">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#low-calorie-controls" onclick="nextButton('low-calorie');">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <div class="d-flex justify-content-left">
+            <div class="dining-halls mt-3 flex flex-col">
+                <h2>Breakfast</h2>
+            </div>
+        </div>
+        
+        <div id="breakfast-controls" class="carousel" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for breakfast_recipe in breakfast_recipes %}
+                    <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ breakfast_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-capitalize text-center">{{ breakfast_recipe.recipe_name }}</h5>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if breakfast_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif breakfast_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if breakfast_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif breakfast_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if breakfast_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif breakfast_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if breakfast_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif breakfast_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if breakfast_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif breakfast_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if breakfast_recipe.rating_count == 1 %}
+                                        <p style="margin: 0 5px">{{ breakfast_recipe.rating_count }} Rating</p>
+                                    {% else %}
+                                        <p style="margin: 0 5px">{{ breakfast_recipe.rating_count }} Ratings</p>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ breakfast_recipe.recipe_id }}')">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                        View More
+                                    </button>
+                                    {% if "user" in request.COOKIES and breakfast_recipe.is_bookmarked %}
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ breakfast_recipe.recipe_id }}" type="button" id="add-bookmark-{{ breakfast_recipe.recipe_id }}" onclick="addBookmark({{breakfast_recipe.recipe_id}}, '{{ breakfast_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ breakfast_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ breakfast_recipe.recipe_id }}" onclick="removeBookmark({{breakfast_recipe.recipe_id}}, '{{ breakfast_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% elif "user" in request.COOKIES %}
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ breakfast_recipe.recipe_id }}" type="button" id="add-bookmark-{{ breakfast_recipe.recipe_id }}" onclick="addBookmark({{breakfast_recipe.recipe_id}}, '{{ breakfast_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ breakfast_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ breakfast_recipe.recipe_id }}" onclick="removeBookmark({{breakfast_recipe.recipe_id}}, '{{ breakfast_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#breakfast-controls" onclick="prevButton('breakfast');">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#breakfast-controls" onclick="nextButton('breakfast');">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <div class="d-flex justify-content-left">
+            <div class="dining-halls mt-3 flex flex-col">
+                <h2>Lunch</h2>
+            </div>
+        </div>
+        
+        <div id="lunch-controls" class="carousel" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for lunch_recipe in lunch_recipes %}
+                    <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ lunch_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-capitalize text-center">{{ lunch_recipe.recipe_name }}</h5>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if lunch_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif lunch_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if lunch_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif lunch_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if lunch_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif lunch_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if lunch_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif lunch_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if lunch_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif lunch_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if lunch_recipe.rating_count == 1 %}
+                                        <p style="margin: 0 5px">{{ lunch_recipe.rating_count }} Rating</p>
+                                    {% else %}
+                                        <p style="margin: 0 5px">{{ lunch_recipe.rating_count }} Ratings</p>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ lunch_recipe.recipe_id }}')">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                        View More
+                                    </button>
+                                    {% if "user" in request.COOKIES and lunch_recipe.is_bookmarked %}
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ lunch_recipe.recipe_id }}" type="button" id="add-bookmark-{{ lunch_recipe.recipe_id }}" onclick="addBookmark({{lunch_recipe.recipe_id}}, '{{ lunch_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ lunch_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ lunch_recipe.recipe_id }}" onclick="removeBookmark({{lunch_recipe.recipe_id}}, '{{ lunch_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% elif "user" in request.COOKIES %}
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ lunch_recipe.recipe_id }}" type="button" id="add-bookmark-{{ lunch_recipe.recipe_id }}" onclick="addBookmark({{lunch_recipe.recipe_id}}, '{{ lunch_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ lunch_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ lunch_recipe.recipe_id }}" onclick="removeBookmark({{lunch_recipe.recipe_id}}, '{{ lunch_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#lunch-controls" onclick="prevButton('lunch');">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#lunch-controls" onclick="nextButton('lunch');">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <div class="d-flex justify-content-left">
+            <div class="dining-halls mt-3 flex flex-col">
+                <h2>Dinner</h2>
+            </div>
+        </div>
+        
+        <div id="dinner-controls" class="carousel" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for dinner_recipe in dinner_recipes %}
+                    <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ dinner_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-capitalize text-center">{{ dinner_recipe.recipe_name }}</h5>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if dinner_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif dinner_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if dinner_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif dinner_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if dinner_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif dinner_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if dinner_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif dinner_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if dinner_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif dinner_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if dinner_recipe.rating_count == 1 %}
+                                        <p style="margin: 0 5px">{{ dinner_recipe.rating_count }} Rating</p>
+                                    {% else %}
+                                        <p style="margin: 0 5px">{{ dinner_recipe.rating_count }} Ratings</p>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ dinner_recipe.recipe_id }}')">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                        View More
+                                    </button>
+                                    {% if "user" in request.COOKIES and dinner_recipe.is_bookmarked %}
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ dinner_recipe.recipe_id }}" type="button" id="add-bookmark-{{ dinner_recipe.recipe_id }}" onclick="addBookmark({{dinner_recipe.recipe_id}}, '{{ dinner_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ dinner_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ dinner_recipe.recipe_id }}" onclick="removeBookmark({{dinner_recipe.recipe_id}}, '{{ dinner_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% elif "user" in request.COOKIES %}
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ dinner_recipe.recipe_id }}" type="button" id="add-bookmark-{{ dinner_recipe.recipe_id }}" onclick="addBookmark({{dinner_recipe.recipe_id}}, '{{ dinner_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ dinner_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ dinner_recipe.recipe_id }}" onclick="removeBookmark({{dinner_recipe.recipe_id}}, '{{ dinner_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#dinner-controls" onclick="prevButton('dinner');">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#dinner-controls" onclick="nextButton('dinner');">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <div class="d-flex justify-content-left">
+            <div class="dining-halls mt-3 flex flex-col">
+                <h2>Appetizers</h2>
+            </div>
+        </div>
+        
+        <div id="appetizers-controls" class="carousel" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for appetizers_recipe in appetizers_recipes %}
+                    <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ appetizers_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-capitalize text-center">{{ appetizers_recipe.recipe_name }}</h5>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if appetizers_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif appetizers_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if appetizers_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif appetizers_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if appetizers_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif appetizers_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if appetizers_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif appetizers_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if appetizers_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif appetizers_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if appetizers_recipe.rating_count == 1 %}
+                                        <p style="margin: 0 5px">{{ appetizers_recipe.rating_count }} Rating</p>
+                                    {% else %}
+                                        <p style="margin: 0 5px">{{ appetizers_recipe.rating_count }} Ratings</p>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ appetizers_recipe.recipe_id }}')">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                        View More
+                                    </button>
+                                    {% if "user" in request.COOKIES and appetizers_recipe.is_bookmarked %}
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ appetizers_recipe.recipe_id }}" type="button" id="add-bookmark-{{ appetizers_recipe.recipe_id }}" onclick="addBookmark({{appetizers_recipe.recipe_id}}, '{{ appetizers_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ appetizers_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ appetizers_recipe.recipe_id }}" onclick="removeBookmark({{appetizers_recipe.recipe_id}}, '{{ appetizers_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% elif "user" in request.COOKIES %}
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ appetizers_recipe.recipe_id }}" type="button" id="add-bookmark-{{ appetizers_recipe.recipe_id }}" onclick="addBookmark({{appetizers_recipe.recipe_id}}, '{{ appetizers_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ appetizers_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ appetizers_recipe.recipe_id }}" onclick="removeBookmark({{appetizers_recipe.recipe_id}}, '{{ appetizers_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#appetizers-controls" onclick="prevButton('appetizers');">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#appetizers-controls" onclick="nextButton('appetizers');">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <div class="d-flex justify-content-left">
+            <div class="dining-halls mt-3 flex flex-col">
+                <h2>Desserts</h2>
+            </div>
+        </div>
+            
+        <div id="desserts-controls" class="carousel" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for desserts_recipe in desserts_recipes %}
+                    <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ desserts_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-capitalize text-center">{{ desserts_recipe.recipe_name }}</h5>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if desserts_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif desserts_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if desserts_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif desserts_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if desserts_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif desserts_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if desserts_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif desserts_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if desserts_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif desserts_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if desserts_recipe.rating_count == 1 %}
+                                        <p style="margin: 0 5px">{{ desserts_recipe.rating_count }} Rating</p>
+                                    {% else %}
+                                        <p style="margin: 0 5px">{{ desserts_recipe.rating_count }} Ratings</p>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ desserts_recipe.recipe_id }}')">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                        View More
+                                    </button>
+                                    {% if "user" in request.COOKIES and desserts_recipe.is_bookmarked %}
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ desserts_recipe.recipe_id }}" type="button" id="add-bookmark-{{ desserts_recipe.recipe_id }}" onclick="addBookmark({{desserts_recipe.recipe_id}}, '{{ desserts_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ desserts_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ desserts_recipe.recipe_id }}" onclick="removeBookmark({{desserts_recipe.recipe_id}}, '{{ desserts_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% elif "user" in request.COOKIES %}
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ desserts_recipe.recipe_id }}" type="button" id="add-bookmark-{{ desserts_recipe.recipe_id }}" onclick="addBookmark({{desserts_recipe.recipe_id}}, '{{ desserts_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ desserts_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ desserts_recipe.recipe_id }}" onclick="removeBookmark({{desserts_recipe.recipe_id}}, '{{ desserts_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#desserts-controls" onclick="prevButton('desserts');">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#desserts-controls" onclick="nextButton('desserts');">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <div class="d-flex justify-content-left">
+            <div class="dining-halls mt-3 flex flex-col">
+                <h2>Vegetarian</h2>
+            </div>
+        </div>
+        
+        <div id="vegetarian-controls" class="carousel" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for vegetarian_recipe in vegetarian_recipes %}
+                    <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ vegetarian_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-capitalize text-center">{{ vegetarian_recipe.recipe_name }}</h5>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if vegetarian_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegetarian_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegetarian_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegetarian_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegetarian_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegetarian_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegetarian_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegetarian_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegetarian_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegetarian_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegetarian_recipe.rating_count == 1 %}
+                                        <p style="margin: 0 5px">{{ vegetarian_recipe.rating_count }} Rating</p>
+                                    {% else %}
+                                        <p style="margin: 0 5px">{{ vegetarian_recipe.rating_count }} Ratings</p>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ vegetarian_recipe.recipe_id }}')">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                        View More
+                                    </button>
+                                    {% if "user" in request.COOKIES and vegetarian_recipe.is_bookmarked %}
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ vegetarian_recipe.recipe_id }}" type="button" id="add-bookmark-{{ vegetarian_recipe.recipe_id }}" onclick="addBookmark({{vegetarian_recipe.recipe_id}}, '{{ vegetarian_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ vegetarian_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ vegetarian_recipe.recipe_id }}" onclick="removeBookmark({{vegetarian_recipe.recipe_id}}, '{{ vegetarian_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% elif "user" in request.COOKIES %}
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ vegetarian_recipe.recipe_id }}" type="button" id="add-bookmark-{{ vegetarian_recipe.recipe_id }}" onclick="addBookmark({{vegetarian_recipe.recipe_id}}, '{{ vegetarian_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ vegetarian_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ vegetarian_recipe.recipe_id }}" onclick="removeBookmark({{vegetarian_recipe.recipe_id}}, '{{ vegetarian_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#vegetarian-controls" onclick="prevButton('vegetarian');">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#vegetarian-controls" onclick="nextButton('vegetarian');">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <div class="d-flex justify-content-left">
+            <div class="dining-halls mt-3 flex flex-col">
+                <h2>Vegan</h2>
+            </div>
+        </div>
+        
+        <div id="vegan-controls" class="carousel" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for vegan_recipe in vegan_recipes %}
+                    <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ vegan_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-capitalize text-center">{{ vegan_recipe.recipe_name }}</h5>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    {% if vegan_recipe.average_rating >= .75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegan_recipe.average_rating >= .25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegan_recipe.average_rating >= 1.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegan_recipe.average_rating >= 1.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegan_recipe.average_rating >= 2.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegan_recipe.average_rating >= 2.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegan_recipe.average_rating >= 3.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegan_recipe.average_rating >= 3.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegan_recipe.average_rating >= 4.75 %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif vegan_recipe.average_rating >= 4.25 %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                    {% if vegan_recipe.rating_count == 1 %}
+                                        <p style="margin: 0 5px">{{ vegan_recipe.rating_count }} Rating</p>
+                                    {% else %}
+                                        <p style="margin: 0 5px">{{ vegan_recipe.rating_count }} Ratings</p>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-center mt-2">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ vegan_recipe.recipe_id }}')">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                        View More
+                                    </button>
+                                    {% if "user" in request.COOKIES and vegan_recipe.is_bookmarked %}
+                                        <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ vegan_recipe.recipe_id }}" type="button" id="add-bookmark-{{ vegan_recipe.recipe_id }}" onclick="addBookmark({{vegan_recipe.recipe_id}}, '{{ vegan_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ vegan_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ vegan_recipe.recipe_id }}" onclick="removeBookmark({{vegan_recipe.recipe_id}}, '{{ vegan_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% elif "user" in request.COOKIES %}
+                                        <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ vegan_recipe.recipe_id }}" type="button" id="add-bookmark-{{ vegan_recipe.recipe_id }}" onclick="addBookmark({{vegan_recipe.recipe_id}}, '{{ vegan_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark"></i>
+                                            Bookmark
+                                        </button>
+                                        <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ vegan_recipe.recipe_id }}" type="button" id="remove-bookmark-{{ vegan_recipe.recipe_id }}" onclick="removeBookmark({{vegan_recipe.recipe_id}}, '{{ vegan_recipe.recipe_name }}');">
+                                            <i class="bi bi-bookmark-x"></i>
+                                            Remove
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#vegan-controls" onclick="prevButton('vegan');">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#vegan-controls" onclick="nextButton('vegan');">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="recipeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel" style="text-transform: capitalize;"><p id="recipe-title"></p></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="container text-center">
+                <div class="w-100 text-start">
+                    <p class="d-inline"><strong>Preparation Time:</strong> <p class="d-inline" id="preparation-time"></p></p>
+                </div>
+            <div class="row my-3">
+              <div class="col">
+                <div class="card">
+                  <div class="card-body">
+                    <p style="text-align: left;"><strong>Steps:</strong></p>
+                      <div id="steps">
+
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="card">
+                  <div class="card-body">
+                    <p><strong>Ingredients</strong></p>
+                      <div id="ingredients">
+
+                      </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+            <hr/>
+            <div class="row">
+              <div class="col-5 mx-auto">
+                <div class="card">
+                  <div class="card-body">
+                    <table class="table">
+                      <tbody>
+                        <tr>
+                          <td style="text-align: left;"><strong>Calories</strong></td>
+                          <td style="text-align: left;" id="recipe-calories"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Total Fat</strong></td>
+                          <td style="text-align: left;" id="recipe-total-fat"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Saturated Fat</strong></td>
+                          <td style="text-align: left;" id="recipe-saturated-fat"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Sodium</strong></td>
+                          <td style="text-align: left;" id="recipe-sodium"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Total Carbohydrates</strong></td>
+                          <td style="text-align: left;" id="recipe-carbohydrates"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Total Sugars</strong></td>
+                          <td style="text-align: left;" id="recipe-sugar"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Protein</strong></td>
+                          <td style="text-align: left;" id="recipe-protein"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock %}

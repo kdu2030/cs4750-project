@@ -97,8 +97,8 @@ class Runk:
         trans_fat = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(5) > th").get_attribute("innerText")
         meal_data["trans_fat"] = trans_fat.replace("Trans Fat", "").strip()
 
-        cholestorol = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(6) > th").get_attribute("innerText")
-        meal_data["cholesterol"] = self.get_num(cholestorol.replace("Cholesterol", "").strip())
+        cholesterol = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(6) > th").get_attribute("innerText")
+        meal_data["cholesterol"] = self.get_num(cholesterol.replace("Cholesterol", "").strip())
 
         sodium = self.driver.find_element(By.CSS_SELECTOR, "#nutrition-slider-stage > div > div > table > tbody > tr:nth-child(7) > th").get_attribute("innerText")
         meal_data["sodium"] = self.get_num(sodium.replace("Sodium", "").strip())
@@ -141,8 +141,11 @@ class Runk:
                     self.driver.execute_script("window.scrollTo(0, 0);")
                 self.change_active_meal(i)
                 meal_links = self.get_meal_links()
-                meal_types_data = self.get_meal_type_data(meal_links, date, meal_type)
-                insert_into_db(meal_types_data, "Runk")
+                try:
+                    meal_types_data = self.get_meal_type_data(meal_links, date, meal_type)
+                    insert_into_db(meal_types_data, "Runk")
+                except:
+                    continue
                 all_meals_data.extend(self.get_meal_type_data(meal_links, date, meal_type))
 
         

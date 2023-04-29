@@ -1,0 +1,36 @@
+.row-min-h{
+    height: 150px;
+}
+
+.meal-plan-table-wrapper{
+    overflow: scroll;
+}
+
+.meal-plan-table{
+    table-layout: fixed;
+}
+
+.meal-plan-table thead th{
+    width: 250px;
+}
+
+.meal-plan-table thead th.meal-type-col {
+    width: 100px;
+}
+
+.meal-planner{
+    min-height: 1000px;
+}
+
+.bookmarks-sticky-top {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 10px;
+    z-index: 1020;
+    align-self: flex-start;
+}
+
+.bookmark-content{
+    max-height: 300px;
+    overflow: scroll;
+}
