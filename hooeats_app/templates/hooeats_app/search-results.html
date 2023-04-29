@@ -7,36 +7,72 @@
 
 {% block content %}
 
-  <h1>Search Results</h1>
-  
-  <p>Results for keyword: "{{ keyword }}"</p>
-  <ul>
-    <p><strong>UVA Dining Hall</strong></p>
-    {% for item in uva_dining_items %}
+<div id="data">
+  {% csrf_token %}
+</div>
 
-      <li>
-        <h2>{{ item.title }}</h2>
-        <p><strong>Description:</strong> {{ item.description }}</p>
-        <p><strong>Calories:</strong> {{ item.calories }}</p>
-        <p><strong>Dining Hall:</strong> {{ item.dining_hall }}</p>
-        
-        {% if user.is_authenticated %}
-          {% if item.is_bookmarked %}
-            <a href="{% url 'remove_bookmark' item.meal_id %}">Remove bookmark</a>
-          {% else %}
-            <a href="{% url 'add_bookmark' item.meal_id %}">Add bookmark</a>
-          {% endif %}
-        {% endif %}
-      </li>
-    {% endfor %}
+<center>
+  <h1>Search Results</h1>
+  <p>"{{ keyword }}"</p>
+</center>  
+
+  <ul>
+    <div class="container">
+      <div class="w-100 text-start">
+        <p style="font-size: 24px;"><strong>UVA Dining Halls</strong></p>
+      </div>
+      <div class="row">
+        {% for menu_item in uva_dining_items %}
+        <div class="col-md-3">
+          <div class="card mb-3 me-3">
+            <div class="card-header">
+                {{ menu_item.dining_hall }} <br>
+                Date: {{ menu_item.meal_date }}
+            </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title section-title">{{ menu_item.title }}</h5>
+                <p class="card-text"> {{ menu_item.description }}</h5>
+                <div class="d-flex d-row mt-auto">
+                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ menu_item.dining_hall }}', '{{ menu_item.section }}')">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                        View More
+                    </button>
+                    {% if "user" in request.COOKIES and menu_item.is_bookmarked %}
+                        <button class="d-none btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ menu_item.meal_id }}" onclick="addBookmark({{menu_item.meal_id}}, '{{ menu_item.title }}');">
+                            <i class="bi bi-bookmark"></i>
+                            Bookmark
+                        </button>
+                        <button class="d-block btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ menu_item.meal_id }}" onclick="removeBookmark({{menu_item.meal_id}}, '{{ menu_item.title }}');">
+                            <i class="bi bi-bookmark-x"></i>
+                            Remove
+                        </button>
+                    {% elif "user" in request.COOKIES %}
+                        <button class="btn btn-outline-success bookmark-buttons" type="button" id="add-bookmark-{{ menu_item.meal_id }}" onclick="addBookmark({{menu_item.meal_id}}, '{{ menu_item.title }}');">
+                            <i class="bi bi-bookmark"></i>
+                            Bookmark
+                        </button>
+                        <button class="d-none btn btn-outline-danger bookmark-buttons" type="button" id="remove-bookmark-{{ menu_item.meal_id }}" onclick="removeBookmark({{menu_item.meal_id}}, '{{ menu_item.title }}');">
+                            <i class="bi bi-bookmark-x"></i>
+                            Remove
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
   </ul>
   <ul>
-    <p><strong>Recipes</strong></p>
     <div class="container">
+      <div class="w-100 text-start">
+        <p style="font-size: 24px;"><strong>Recipes</strong></p>
+      </div>
       <div class="row">
           {% for item in recipe_items %}
-            <div class="col-md-3">
-              <div class="card h-100 d-flex" style="width: 18rem;">
+            <div class="col-md-3 mb-3">
+              <div class="card h-100 d-flex" style="width: 20.1rem;">
                 <div class="card-body text-center">
                   <img src={{item.img_url}} class="card-img-top" alt="...">
                   <div class="card-body">
@@ -44,7 +80,7 @@
                     <p class="card-text">Calories: {{item.calories}}</p>
                     <p class="card-text">Preparation Time: {{item.mins}} minutes</p>
                     
-                    <div class="d-flex flex-row align-items-center justify-content-center">
+                    <div class="d-flex flex-row align-items-center justify-content-center mb-3">
                       <span>
                         {% if item.average_rating >= .75 %}
                             <i class="bi bi-star-fill text-warning"></i>
@@ -93,6 +129,25 @@
                         <i class="bi bi-box-arrow-up-right"></i>
                         View More
                       </button>
+                      {% if "user" in request.COOKIES and item.is_bookmarked %}
+                          <button class="d-none btn btn-outline-success bookmark-buttons add-bookmark-{{ item.recipe_id }}" type="button" id="add-bookmark-{{ item.recipe_id }}" onclick="addRecipeBookmark({{item.recipe_id}}, '{{ item.recipe_name }}');">
+                              <i class="bi bi-bookmark"></i>
+                              Bookmark
+                          </button>
+                          <button class="d-block btn btn-outline-danger bookmark-button remove-bookmark-{{ item.recipe_id }}" type="button" id="remove-bookmark-{{ item.recipe_id }}" onclick="removeRecipeBookmark({{item.recipe_id}}, '{{ item.recipe_name }}');">
+                              <i class="bi bi-bookmark-x"></i>
+                              Remove
+                          </button>
+                      {% elif "user" in request.COOKIES %}
+                          <button class="btn btn-outline-success bookmark-buttons add-bookmark-{{ item.recipe_id }}" type="button" id="add-bookmark-{{ item.recipe_id }}" onclick="addRecipeBookmark({{item.recipe_id}}, '{{ item.recipe_name }}');">
+                              <i class="bi bi-bookmark"></i>
+                              Bookmark
+                          </button>
+                          <button class="d-none btn btn-outline-danger bookmark-buttons remove-bookmark-{{ item.recipe_id }}" type="button" id="remove-bookmark-{{ item.recipe_id }}" onclick="removeRecipeBookmark({{item.recipe_id}}, '{{ item.recipe_name }}');">
+                              <i class="bi bi-bookmark-x"></i>
+                              Remove
+                          </button>
+                      {% endif %}
                     </div>
                   </div>
                 </div>
@@ -184,4 +239,65 @@
       </div>
     </div>
   </div>
+  <div class="modal fade" id="nutrition-details" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="meal-title">sample</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="meal-description"></p>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td><strong>Amount Per Serving</strong></td>
+                            <td id="serving-size"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Calories</strong></td>
+                            <td id="calories"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Calories From Fat</strong></td>
+                            <td id="calories-from-fat"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Fat</strong></td>
+                            <td id="total-fat"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Saturated Fat</strong></td>
+                            <td id="saturated-fat"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cholestorol</strong></td>
+                            <td id="cholesterol"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sodium</strong></td>
+                            <td id="sodium"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Carbohydrates</strong></td>
+                            <td id="total-carbohydrates"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Protein</strong></td>
+                            <td id="protein"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sugar</strong></td>
+                            <td id="sugar"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dietary Fiber</strong></td>
+                            <td id="dietary-fiber"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
