@@ -171,10 +171,10 @@ def delete_meal_plan(request: HttpRequest) -> HttpResponse:
         return redirect(reverse("signin"))
     username = json.loads(request.COOKIES.get("user"))["username"]
     plan_id = request.POST.get("plan_id")
-    check_owner_query = "SELECT username FROM meal_plan;"
+    check_owner_query = "SELECT username FROM meal_plan WHERE plan_id=?;"
     delete_meal_plan_query = "DELETE FROM meal_plan WHERE plan_id=?;"
     database = HooEatsDatabase(secure=True)
-    meal_plan_owner = database.execute_secure(True, check_owner_query, username)[0]["username"]
+    meal_plan_owner = database.execute_secure(True, check_owner_query, plan_id)[0]["username"]
     if meal_plan_owner == username:
         database.execute_secure(False, delete_meal_plan_query, plan_id)
     else:
