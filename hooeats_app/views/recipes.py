@@ -17,31 +17,24 @@ def recipe(request: HttpRequest) -> HttpResponse:
 def get_info(recipes):
     database = HooEatsDatabase(secure=True)
     for recipe in recipes:
-        tag_query = "SELECT tag FROM recipe_tags WHERE recipe_id=?"
-        ingredients_query = "SELECT ingredient FROM recipe_ingredients WHERE recipe_id=?"
-        tag_dicts = database.execute_secure(True, tag_query, recipe["recipe_id"])
-        ingredient_dicts = database.execute_secure(True, ingredients_query, recipe["recipe_id"])
-        all_query = "SELECT * FROM recipes NATURAL JOIN recipe_images WHERE recipe_id=?"
-        full = database.execute_secure(True, all_query, recipe["recipe_id"])
+        recipe_tag_query = "SELECT tag FROM recipe_tags WHERE recipe_id = ?;"
+        tags = database.execute_secure(True, recipe_tag_query, recipe["recipe_id"])
         recipe["tags"] = []
+        for tag in tags:
+            recipe["tags"].append(tag['tag'])
+    for recipe in recipes:
+        recipe_ingredients_query = "SELECT ingredient FROM recipe_ingredients2 WHERE recipe_id = ?;"
+        ingredients = database.execute_secure(True, recipe_ingredients_query, recipe["recipe_id"])
         recipe["ingredients"] = []
-        recipe["recipe_name"]=[]
-        recipe["average_rating"]=[]
-        recipe["rating_count"]=[]
-        recipe["img_url"]=[]
-        for tag_dict in tag_dicts:
-            for tag in tag_dict.values():
-                recipe["tags"].append(tag)
-        for ingredient_dict in ingredient_dicts:
-            for ingredient in ingredient_dict:
-                recipe["ingredients"].append(ingredient)
+        for ingredient in ingredients:
+            recipe["ingredients"].append(ingredient['ingredient'])
     database.close()
     return recipes
 
 def get_recipe_data(username: str = ""):
 
     #tags_query = "SELECT DISTINCT recipe_id FROM recipe_tags WHERE tag = ?;"
-    recipe_query = "SELECT * FROM (SELECT DISTINCT recipe_id FROM recipe_tags WHERE tag LIKE ?) AS recipe_explorer_tags NATURAL JOIN recipes NATURAL JOIN recipe_images;"
+    recipe_query = "SELECT * FROM (SELECT DISTINCT recipe_id FROM recipe_tags WHERE tag LIKE ?) AS recipe_explorer_tags NATURAL JOIN recipes NATURAL JOIN recipe_images NATURAL JOIN recipe_instructions LIMIT 8;"
 
     database = HooEatsDatabase(secure=True)
     low_calorie_recipes = database.execute_secure(True, recipe_query, '%low-calorie%')
@@ -57,14 +50,14 @@ def get_recipe_data(username: str = ""):
     recipe_types_tag = ['low-calorie','breakfast','lunch','dinner','appetizers','desserts','vegetarian','vegan']
 
     context = {
-        "low_calorie_recipes": low_calorie_recipes,
-        "breakfast_recipes": breakfast_recipes,
-        "lunch_recipes": lunch_recipes,
-        "dinner_recipes": dinner_recipes,
-        "appetizers_recipes": appetizers_recipes,
-        "desserts_recipes": desserts_recipes,
-        "vegetarian_recipes": vegetarian_recipes,
-        "vegan_recipes": vegan_recipes,
+        "low_calorie_recipes": get_info(low_calorie_recipes),
+        "breakfast_recipes": get_info(breakfast_recipes),
+        "lunch_recipes": get_info(lunch_recipes),
+        "dinner_recipes": get_info(dinner_recipes),
+        "appetizers_recipes": get_info(appetizers_recipes),
+        "desserts_recipes": get_info(desserts_recipes),
+        "vegetarian_recipes": get_info(vegetarian_recipes),
+        "vegan_recipes": get_info(vegan_recipes),
         "recipe_types": recipe_types,
         "recipe_types_tag": recipe_types_tag
     }
@@ -156,3 +149,17 @@ def remove_bookmark(request: HttpRequest) -> JsonResponse:
     except:
         print_exc()
         return JsonResponse({"result": "Database Error"})
+    
+def fetch_recipe_nutritional_data(request: HttpRequest, recipe_id: int) -> JsonResponse:
+     query = "SELECT * FROM recipes NATURAL JOIN recipe_instructions NATURAL JOIN recipe_images WHERE recipes.recipe_id=?;"
+     ingredient_query = "SELECT ingredient FROM recipe_ingredients2 WHERE recipe_id=?;"
+     try:
+          database = HooEatsDatabase(secure=True)
+          nutritional_data = database.execute_secure(True, query, recipe_id)[0]
+          ingredient_data = database.execute_secure(True, ingredient_query, recipe_id)
+          nutritional_data["ingredients"] = ingredient_data
+          nutritional_data["steps"] = eval(nutritional_data["steps"])
+          return JsonResponse(nutritional_data)
+     except:
+          error = {"result": "Database Error"}
+          return JsonResponse(error)

@@ -37,8 +37,8 @@
             <div class="carousel-inner">
                 {% for low_calorie_recipe in low_calorie_recipes %}
                     <div class="carousel-item{% if forloop.first %} active{% endif %}">
-                        <div class="card">
-                            <div class="img-wrapper"><img src="{{ low_calorie_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ low_calorie_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ low_calorie_recipe.recipe_name }}</h5>
                                 <div class="d-flex flex-row justify-content-center mt-2">
@@ -84,7 +84,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="d-flex flex-row justify-content-center mt-2">
-                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ low_calorie_recipe.recipe_id }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
                                     </button>
@@ -133,8 +133,8 @@
             <div class="carousel-inner">
                 {% for breakfast_recipe in breakfast_recipes %}
                     <div class="carousel-item{% if forloop.first %} active{% endif %}">
-                        <div class="card">
-                            <div class="img-wrapper"><img src="{{ breakfast_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ breakfast_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ breakfast_recipe.recipe_name }}</h5>
                                 <div class="d-flex flex-row justify-content-center mt-2">
@@ -180,7 +180,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="d-flex flex-row justify-content-center mt-2">
-                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ breakfast_recipe.recipe_id }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
                                     </button>
@@ -229,8 +229,8 @@
             <div class="carousel-inner">
                 {% for lunch_recipe in lunch_recipes %}
                     <div class="carousel-item{% if forloop.first %} active{% endif %}">
-                        <div class="card">
-                            <div class="img-wrapper"><img src="{{ lunch_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ lunch_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ lunch_recipe.recipe_name }}</h5>
                                 <div class="d-flex flex-row justify-content-center mt-2">
@@ -276,7 +276,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="d-flex flex-row justify-content-center mt-2">
-                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ lunch_recipe.recipe_id }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
                                     </button>
@@ -325,8 +325,8 @@
             <div class="carousel-inner">
                 {% for dinner_recipe in dinner_recipes %}
                     <div class="carousel-item{% if forloop.first %} active{% endif %}">
-                        <div class="card">
-                            <div class="img-wrapper"><img src="{{ dinner_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ dinner_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ dinner_recipe.recipe_name }}</h5>
                                 <div class="d-flex flex-row justify-content-center mt-2">
@@ -372,7 +372,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="d-flex flex-row justify-content-center mt-2">
-                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ dinner_recipe.recipe_id }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
                                     </button>
@@ -421,8 +421,8 @@
             <div class="carousel-inner">
                 {% for appetizers_recipe in appetizers_recipes %}
                     <div class="carousel-item{% if forloop.first %} active{% endif %}">
-                        <div class="card">
-                            <div class="img-wrapper"><img src="{{ appetizers_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ appetizers_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ appetizers_recipe.recipe_name }}</h5>
                                 <div class="d-flex flex-row justify-content-center mt-2">
@@ -468,7 +468,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="d-flex flex-row justify-content-center mt-2">
-                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ appetizers_recipe.recipe_id }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
                                     </button>
@@ -517,8 +517,8 @@
             <div class="carousel-inner">
                 {% for desserts_recipe in desserts_recipes %}
                     <div class="carousel-item{% if forloop.first %} active{% endif %}">
-                        <div class="card">
-                            <div class="img-wrapper"><img src="{{ desserts_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ desserts_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ desserts_recipe.recipe_name }}</h5>
                                 <div class="d-flex flex-row justify-content-center mt-2">
@@ -564,7 +564,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="d-flex flex-row justify-content-center mt-2">
-                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ desserts_recipe.recipe_id }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
                                     </button>
@@ -613,8 +613,8 @@
             <div class="carousel-inner">
                 {% for vegetarian_recipe in vegetarian_recipes %}
                     <div class="carousel-item{% if forloop.first %} active{% endif %}">
-                        <div class="card">
-                            <div class="img-wrapper"><img src="{{ vegetarian_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ vegetarian_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ vegetarian_recipe.recipe_name }}</h5>
                                 <div class="d-flex flex-row justify-content-center mt-2">
@@ -660,7 +660,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="d-flex flex-row justify-content-center mt-2">
-                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ vegetarian_recipe.recipe_id }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
                                     </button>
@@ -709,8 +709,8 @@
             <div class="carousel-inner">
                 {% for vegan_recipe in vegan_recipes %}
                     <div class="carousel-item{% if forloop.first %} active{% endif %}">
-                        <div class="card">
-                            <div class="img-wrapper"><img src="{{ vegan_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
+                        <div class="card" style="margin: 0 0.5em;box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);border: none;">
+                            <div class="img-wrapper" style="max-width:100%;height:13em;display:flex;justify-content:center;align-items:center;"><img src="{{ vegan_recipe.img_url }}" class="d-block w-100" alt="..." style="object-fit: cover;"> </div>
                             <div class="card-body">
                                 <h5 class="card-title text-capitalize text-center">{{ vegan_recipe.recipe_name }}</h5>
                                 <div class="d-flex flex-row justify-content-center mt-2">
@@ -756,7 +756,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="d-flex flex-row justify-content-center mt-2">
-                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#nutrition-details" onclick="addNutritionalInfo('{{ menu_item.title }}', '{{ dining_hall_title }}', '{{ menu_item.section }}')">
+                                    <button class="d-block btn btn-outline-success me-3" type="button" data-bs-toggle="modal" data-bs-target="#recipeModal" onclick="addRecipeNutritionalInfo('{{ vegan_recipe.recipe_id }}')">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                         View More
                                     </button>
@@ -797,4 +797,87 @@
 
     </div>
 </div>
+
+<div class="modal fade" id="recipeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel" style="text-transform: capitalize;"><p id="recipe-title"></p></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Preparation Time:</strong> <p id="preparation-time"></p></p>
+          <div class="container text-center">
+            <div class="row my-3">
+              <div class="col">
+                <div class="card">
+                  <div class="card-body">
+                    <p style="text-align: left;"><strong>Steps:</strong></p>
+                      <div id="steps">
+
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="card">
+                  <div class="card-body">
+                    <p><strong>Ingredients</strong></p>
+                      <div id="ingredients">
+
+                      </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+            <hr/>
+            <div class="row">
+              <div class="col-5 mx-auto">
+                <div class="card">
+                  <div class="card-body">
+                    <table class="table">
+                      <tbody>
+                        <tr>
+                          <td style="text-align: left;"><strong>Calories</strong></td>
+                          <td style="text-align: left;" id="recipe-calories"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Total Fat</strong></td>
+                          <td style="text-align: left;" id="recipe-total-fat"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Saturated Fat</strong></td>
+                          <td style="text-align: left;" id="recipe-saturated-fat"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Sodium</strong></td>
+                          <td style="text-align: left;" id="recipe-sodium"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Total Carbohydrates</strong></td>
+                          <td style="text-align: left;" id="recipe-carbohydrates"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Total Sugars</strong></td>
+                          <td style="text-align: left;" id="recipe-sugar"></td>
+                        </tr>
+                        <tr>
+                          <td style="text-align: left;"><strong>Protein</strong></td>
+                          <td style="text-align: left;" id="recipe-protein"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+</div>
+
 {% endblock %}
