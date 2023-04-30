@@ -24,11 +24,11 @@
                     <h2>Search for Recipes</h2>
                     <p class="fs-6">
                         With over 1000 recipes, you will be sure to find something you enjoy. We have recipes for breakfast, lunch, dinner, and snacks.
-                        Search by keyword, nutritional information, ingredients, cook time, and more.
+                        Each recipe has ingredients, steps, nutritional information.
                     </p>
-                    <button class="btn btn-success mt-5">
+                    <button class="btn btn-success mt-5" onclick="window.open('{% url 'recipes' %}', '_self')">
                         <i class="bi bi-search"></i>
-                        Search for Recipes
+                        Explore Recipes
                     </button>
                 </div>
                 <div class="col-6 p-0">
@@ -45,9 +45,9 @@
                         You can explore weekly menus for all three dining halls at UVA - Runk, O'Hill, and Newcomb. Each menu item has nutritional information
                         such as calories, total fat, carbohydrates, protein, and sugar. Add the dining hall meals you want to your weekly meal plan.
                     </p>
-                    <button class="btn btn-success mt-5">
+                    <button class="btn btn-success mt-5" onclick="window.open('{% url 'dining_hall' 'Observatory Hill'%}', '_self')">
                         <i class="bi bi-cup-straw"></i>
-                        Explore Dining Hall Menus
+                        Explore O'Hill
                     </button>
                 </div>
             </div>
@@ -59,7 +59,7 @@
                         Plan out your meals for each week using our meal planner. Each weekly meal plan includes sections for breakfast, lunch, dinner, and snacks.
                         You can bookmark recipes and UVA dining hall meals that you like, and add them to your plan for the week.
                     </p>
-                    <button class="btn btn-success mt-5">
+                    <button class="btn btn-success mt-5" onclick="window.open('{% url 'meal_planner' %}', '_self')">
                         <i class="bi bi-calendar-date"></i>
                         Create a meal plan
                     </button>

@@ -11,6 +11,7 @@
     {% bootstrap_javascript %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{% static 'hooeats_app/base.css' %}" />
+    <link rel="icon" href="https://iili.io/HSH3D8b.png" />
     {% block head_content %}
     {% endblock %}
 </head>
@@ -48,6 +49,10 @@
                     <a class="dropdown-item" href="{% url 'dashboard' %}">
                         <i class="bi bi-house me-2"></i>
                         Dashboard
+                    </a>
+                    <a class="dropdown-item" href="{% url 'account_settings' %}">
+                        <i class="bi bi-gear me-2"></i>
+                        Account Settings
                     </a>
                     <a class="dropdown-item" href="{% url 'signout' %}">
                         <i class="bi bi-box-arrow-in-left me-2"></i>
@@ -98,12 +103,12 @@
                     Runk
                 </a>
                 <a href="{% url 'recipes' %}" class="list-group-item list-group-item-action">
-                    <i class="bi bi-journals"></i>
+                    <i class="bi bi-journals me-2"></i>
                     Recipes
                 </a>
                 {% if "user" in request.COOKIES %}
                     <a href="{% url 'account_settings' %}" class="list-group-item list-group-item-action">
-                        <i class="bi bi-gear-wide me-2"></i>
+                        <i class="bi bi-gear me-2"></i>
                         Account Settings
                     </a>
                 {% endif %}
