@@ -188,7 +188,7 @@
                                                 
                                                 {% for recipe in recipes_in_plan %}
                                                     {% if recipe.week_offset == i and recipe.plan_meal_type == 'Breakfast' %}
-                                                        <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }}>
+                                                        <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }} data-plan-item-id={{ recipe.item_id }}>
                                                             <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" />
                                                             <div class="card-body">
                                                                 <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
@@ -229,7 +229,7 @@
                                                 
                                                 {% for recipe in recipes_in_plan %}
                                                     {% if recipe.week_offset == i and recipe.plan_meal_type == 'Lunch' %}
-                                                        <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }}>
+                                                        <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }} data-plan-item-id={{ recipe.item_id }}>
                                                             <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" />
                                                             <div class="card-body">
                                                                 <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
@@ -270,7 +270,7 @@
                                                 
                                                 {% for recipe in recipes_in_plan %}
                                                     {% if recipe.week_offset == i and recipe.plan_meal_type == 'Dinner' %}
-                                                        <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }}>
+                                                        <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }} data-plan-item-id={{ recipe.item_id }}>
                                                             <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" />
                                                             <div class="card-body">
                                                                 <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
@@ -311,7 +311,7 @@
                                                 
                                                 {% for recipe in recipes_in_plan %}
                                                     {% if recipe.week_offset == i and recipe.plan_meal_type == 'Snacks' %}
-                                                        <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }}>
+                                                        <div class="card mb-3 recipe" data-recipe-id={{ recipe.recipe_id }} data-plan-item-id={{ recipe.item_id }}>
                                                             <img src="{{ recipe.img_url }}" class="card-img-top" alt="{{ recipe.recipe_name }}-image" />
                                                             <div class="card-body">
                                                                 <h5 class="card-title">{{ recipe.recipe_name | title }}</h5>
