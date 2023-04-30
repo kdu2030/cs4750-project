@@ -7,7 +7,7 @@ class HooEatsDatabase:
     def __init__(self, secure:bool = False):
         HOST = "35.188.232.76"
         DATABASE = "hooeatsdb"
-        USERNAME = "root"
+        USERNAME = "webappuser"
         PASSWORD = "GCFSpring2023"
         
         self.db = mysql.connector.connect(host=HOST, database=DATABASE, username=USERNAME, password=PASSWORD, autocommit=True)
