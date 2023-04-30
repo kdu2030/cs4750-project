@@ -77,7 +77,7 @@
                   <img src={{item.img_url}} class="card-img-top" alt="...">
                   <div class="card-body">
                     <h5 class="card-title" style="text-transform: capitalize;">{{ item.recipe_name }}</h5>
-                    <p class="card-text">Calories: {{item.calories}}</p>
+                    <p class="card-text">Calories: {{item.calories|floatformat:0}}</p>
                     <p class="card-text">Preparation Time: {{item.mins}} minutes</p>
                     
                     <div class="d-flex flex-row align-items-center justify-content-center mb-3">
