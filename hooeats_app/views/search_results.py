@@ -9,7 +9,7 @@ from traceback import print_exc
 def get_search_results(keyword: str, username: str = ""):
     query_keyword = "%" + keyword + "%"
     uva_dining_search_query = "SELECT * FROM uva_meals NATURAL JOIN uva_descriptions WHERE uva_meals.title LIKE ? OR uva_meals.section LIKE ? OR uva_descriptions.description LIKE ? OR uva_meals.dining_hall LIKE ? LIMIT 10;"
-    recipe_search_query = "SELECT * FROM recipes NATURAL JOIN recipe_instructions NATURAL JOIN recipe_images WHERE recipes.recipe_name LIKE ? OR recipe_instructions.steps LIKE ?;"
+    recipe_search_query = "SELECT * FROM recipes NATURAL JOIN recipe_instructions WHERE recipes.recipe_name LIKE ? OR recipe_instructions.steps LIKE ?;"
     recipe_tag_search_query = "SELECT DISTINCT recipe_id FROM recipe_tags WHERE tag LIKE ?;"
     recipe_ingredients_search_query = "SELECT DISTINCT recipe_id FROM recipe_ingredients2 WHERE ingredient LIKE ?;"
 
@@ -73,6 +73,14 @@ def get_search_results(keyword: str, username: str = ""):
         recipe["ingredients"] = []
         for ingredient in ingredients:
             recipe["ingredients"].append(ingredient['ingredient'])
+    
+    #Adding all the recipe images to the recipe items post tag and ingredient search
+    for recipe in recipe_items:
+        recipe_image_query = "SELECT img_url FROM recipe_images WHERE recipe_id = ?;"
+        images = database.execute_secure(True, recipe_image_query, recipe["recipe_id"])
+        recipe["img_url"] = ""
+        for img in images:
+            recipe["img_url"] = img['img_url']
 
 
 
