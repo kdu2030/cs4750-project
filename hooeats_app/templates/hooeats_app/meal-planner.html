@@ -346,13 +346,13 @@
             <div class="modal-body">
                 <form method="POST" action="{% url 'create_meal_plan' %}">
                     {% csrf_token %}
-                    <label class="form-label" for="plan-name">Meal Plan Name</label>
-                    <input type="text" class="form-control mb-3" name="plan-name" placeholder="e.g. Meal Plan 4/12" />
+                    <label class="form-label" for="plan-name">Meal Plan Name<span class="text-danger">*</span></label>
+                    <input type="text" class="form-control mb-3" name="plan-name" placeholder="e.g. Meal Plan 4/12" required />
                     
-                    <label class="form-label" for="plan-start">Week</label>
-                    <input type="date" class="form-control mb-4" name="week-start" />
+                    <label class="form-label" for="plan-start">Week<span class="text-danger">*</span></label>
+                    <input type="date" class="form-control mb-4" name="week-start" required/>
 
-                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Create Meal Plan</button>
+                    <button type="submit" class="btn btn-success">Create Meal Plan</button>
 
                 </form>
             </div>
@@ -370,10 +370,10 @@
             <div class="modal-body">
                 <form method="POST" action="{% url 'update_meal_plan' %}">
                     {% csrf_token %}
-                    <label class="form-label" for="plan-name">Meal Plan Name</label>
-                    <input type="text" class="form-control mb-3" name="plan_name" placeholder="e.g. Meal Plan 4/12" />
+                    <label class="form-label" for="plan-name">Meal Plan Name<span class="text-danger">*</span></label>
+                    <input type="text" class="form-control mb-3" name="plan_name" placeholder="e.g. Meal Plan 4/12" required />
                     <input type="hidden" name="plan_id" value="{{ selected_meal_plan.plan_id }}" />
-                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Update Meal Plan</button>
+                    <button type="submit" class="btn btn-success">Update Meal Plan</button>
                 </form>
             </div>
         </div>
