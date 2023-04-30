@@ -32,7 +32,8 @@ const addToast = (header, message, successful) => {
     setTimeout(() => { toastContainer.removeChild(toast); }, 5000);
 };
 const addNutritionalInfo = (title, diningHall, section) => {
-    const url = "/api/dining-hall/" + encodeURIComponent(title) + "/" + encodeURIComponent(diningHall) + "/" + encodeURIComponent(section) + "/";
+    // const url = "/api/dining-hall/" + encodeURIComponent(title) + "/" + encodeURIComponent(diningHall) + "/" + encodeURIComponent(section) + "/";
+    const url = `/api/dining-hall/${title}/${diningHall}/${section}/`;
     fetch(url)
         .then(response => response.json())
         .then((apiResponse) => {
@@ -108,7 +109,8 @@ const populateRecipeSteps = (recipeList) => {
 }
 
 const addRecipeNutritionalInfo = (recipe_id) => {
-    const url = "/api/search-results/" + encodeURIComponent(recipe_id) + "/";
+    // const url = "/api/search-results/" + encodeURIComponent(recipe_id) + "/";
+    const url = `/api/search-results/${recipe_id}/`;
     fetch(url)
         .then(response => response.json())
         .then((apiResponse) => {
