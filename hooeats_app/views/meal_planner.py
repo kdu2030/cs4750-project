@@ -164,7 +164,7 @@ def update_meal_plan(request: HttpRequest) -> HttpResponse:
     database = HooEatsDatabase(secure=True)
     database.execute_secure(True, update_meal_plan_query, plan_name, plan_id)
     database.close()
-    return redirect(reverse("specific_meal_plan", kwargs={"plan_id", plan_id}))
+    return redirect(reverse("specific_meal_plan", kwargs={"plan_id": plan_id}))
 
 def delete_meal_plan(request: HttpRequest) -> HttpResponse:
     if request.COOKIES.get("user") is None:
