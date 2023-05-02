@@ -49,10 +49,10 @@ def handle_signup(request: HttpRequest) -> HttpResponse:
     password = request.POST.get("password")
     password_hash = str(hashlib.sha512(bytearray(password, "ascii")).hexdigest())
     profile_img = "https://iili.io/yhRgWb.md.png"
-    signup_query = f"INSERT INTO user (username, email, password, profile_img) VALUES (?, ?, ?, ?)"
+    signup_query = f"INSERT INTO user (username, email, password) VALUES (?, ?, ?)"
     try: 
         database = HooEatsDatabase(secure=True)
-        database.execute_secure(False, signup_query, username, email, str(password_hash), profile_img)
+        database.execute_secure(False, signup_query, username, email, str(password_hash))
         database.close()
         user_dict = {"username": username, "email": email, "profile_img": profile_img}
         response = redirect(reverse("index"))
